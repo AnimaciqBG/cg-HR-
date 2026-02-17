@@ -76,11 +76,16 @@ app.use('/api/admin', adminRoutes);
 // Serve frontend static files in production
 if (config.nodeEnv === 'production') {
   const publicPath = path.join(__dirname, '..', 'public');
+  const indexPath = path.join(publicPath, 'index.html');
   app.use(express.static(publicPath));
 
   // SPA fallback - serve index.html for all non-API routes
   app.get('*', (_req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'));
+    if (require('fs').existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(404).json({ error: 'Frontend not available' });
+    }
   });
 } else {
   // 404 handler for development (API only)

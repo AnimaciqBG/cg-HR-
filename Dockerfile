@@ -1,40 +1,31 @@
-FROM node:20-alpine AS base
+FROM node:20-slim
 
-# Backend build
-FROM base AS backend-build
-WORKDIR /app/backend
-COPY backend/package.json backend/tsconfig.json ./
-RUN npm install
-COPY backend/src ./src
-COPY backend/prisma ./prisma
-RUN npx prisma generate
-RUN npm run build
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
-# Frontend build
-FROM base AS frontend-build
+# Build frontend
 WORKDIR /app/frontend
-COPY frontend/package.json ./
-RUN npm install
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
 COPY frontend/ ./
 RUN npm run build
 
-# Production
-FROM base AS production
-WORKDIR /app
+# Build backend
+WORKDIR /app/backend
+COPY backend/package.json backend/package-lock.json ./
+RUN npm ci
+COPY backend/prisma ./prisma
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
+COPY backend/tsconfig.json ./
+COPY backend/src ./src
+RUN npm run build
 
-# Copy backend
-COPY --from=backend-build /app/backend/dist ./dist
-COPY --from=backend-build /app/backend/node_modules ./node_modules
-COPY --from=backend-build /app/backend/prisma ./prisma
-COPY --from=backend-build /app/backend/package.json ./
+# Copy frontend build to backend public dir
+RUN cp -r /app/frontend/dist /app/backend/public
 
-# Copy frontend build into backend static
-COPY --from=frontend-build /app/frontend/dist ./public
+COPY backend/startup.sh ./
+RUN chmod +x startup.sh
 
 ENV NODE_ENV=production
-ENV PORT=3001
-
 EXPOSE 3001
 
-# Run migrations and start
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["./startup.sh"]
