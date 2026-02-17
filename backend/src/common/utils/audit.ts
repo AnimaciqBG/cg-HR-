@@ -1,4 +1,4 @@
-import { AuditAction } from '@prisma/client';
+import { AuditAction, Prisma } from '@prisma/client';
 import prisma from '../../config/database';
 import logger from '../../config/logger';
 
@@ -22,11 +22,11 @@ export async function createAuditLog(entry: AuditLogEntry): Promise<void> {
         action: entry.action,
         objectType: entry.objectType,
         objectId: entry.objectId,
-        before: entry.before || undefined,
-        after: entry.after || undefined,
+        before: (entry.before as Prisma.InputJsonValue) || undefined,
+        after: (entry.after as Prisma.InputJsonValue) || undefined,
         ipAddress: entry.ipAddress,
         userAgent: entry.userAgent,
-        metadata: entry.metadata || undefined,
+        metadata: (entry.metadata as Prisma.InputJsonValue) || undefined,
       },
     });
   } catch (error) {
