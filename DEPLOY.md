@@ -76,15 +76,19 @@ Railway дава безплатен tier с PostgreSQL. Всичко се deploy
 | `MAX_ADMINS` | `3` |
 | `MAX_SUPER_ADMINS` | `1` |
 
-```bash
-# 5. Настрой Build & Start commands в Settings:
-#    Root Directory: /backend
-#    Build: npm install && npx prisma generate && npm run build
-#    Start: npx prisma migrate deploy && npx prisma db seed && node dist/main.js
-
-# 6. Railway автоматично генерира публичен URL
-#    Пример: https://hr-platform-production.up.railway.app
 ```
+5. ВАЖНО - Настрой в Settings → General:
+   Root Directory: backend
+
+6. Настрой в Settings → Build & Deploy:
+   Build Command: npm install && npx prisma generate && npm run build
+   Start Command: npx prisma migrate deploy && node dist/main.js
+
+7. В Settings → Networking → натисни "Generate Domain"
+   Получаваш публичен URL: https://hr-platform-xxx.up.railway.app
+```
+
+**ВАЖНО:** Root Directory ТРЯБВА да е `backend` (без /).
 
 **Безплатен tier:** $5 кредит/месец, достатъчен за тест.
 
