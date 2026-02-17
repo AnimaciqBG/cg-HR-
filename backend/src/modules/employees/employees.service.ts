@@ -306,6 +306,10 @@ export class EmployeesService {
     const employeeNumber = `EMP${String(count + 1).padStart(5, '0')}`;
 
     try {
+      const userEmail = data.email
+        ? data.email.toLowerCase()
+        : `${employeeNumber.toLowerCase()}@placeholder.local`;
+
       const employee = await prisma.employee.create({
         data: {
           employeeNumber,
@@ -320,10 +324,10 @@ export class EmployeesService {
           emergencyContact: data.emergencyContact,
           emergencyPhone: data.emergencyPhone,
           photoUrl: data.photoUrl,
-          departmentId: data.departmentId,
-          locationId: data.locationId,
+          ...(data.departmentId ? { department: { connect: { id: data.departmentId } } } : {}),
+          ...(data.locationId ? { location: { connect: { id: data.locationId } } } : {}),
           jobTitle: data.jobTitle,
-          managerId: data.managerId,
+          ...(data.managerId ? { manager: { connect: { id: data.managerId } } } : {}),
           contractType: data.contractType ?? ContractType.FULL_TIME,
           employmentStatus: data.employmentStatus ?? EmploymentStatus.ACTIVE,
           hireDate: data.hireDate,
@@ -333,33 +337,15 @@ export class EmployeesService {
           hourlyRate: data.hourlyRate,
           currency: data.currency ?? 'BGN',
           createdBy: actorId,
-          // If an email was supplied we connect/create the user account
-          ...(data.email
-            ? {
-                user: {
-                  create: {
-                    email: data.email.toLowerCase(),
-                    passwordHash: '', // Will need password-reset flow
-                    role: data.role ?? UserRole.EMPLOYEE,
-                    status: UserStatus.PENDING_ACTIVATION,
-                    mustChangePassword: true,
-                  },
-                },
-              }
-            : {
-                // When no email is provided we still need a userId – create a
-                // placeholder user. In practice the caller should always supply
-                // an email, but we handle the edge-case gracefully.
-                user: {
-                  create: {
-                    email: `${employeeNumber.toLowerCase()}@placeholder.local`,
-                    passwordHash: '',
-                    role: data.role ?? UserRole.EMPLOYEE,
-                    status: UserStatus.PENDING_ACTIVATION,
-                    mustChangePassword: true,
-                  },
-                },
-              }),
+          user: {
+            create: {
+              email: userEmail,
+              passwordHash: '',
+              role: data.role ?? UserRole.EMPLOYEE,
+              status: UserStatus.PENDING_ACTIVATION,
+              mustChangePassword: true,
+            },
+          },
         },
         select: DETAILED_EMPLOYEE_SELECT,
       });

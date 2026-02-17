@@ -336,7 +336,7 @@ export class TimeEntriesService {
     }
 
     // Validate type is a valid clock type
-    if (![TimeEntryType.CLOCK_IN, TimeEntryType.CLOCK_OUT].includes(type)) {
+    if (type !== TimeEntryType.CLOCK_IN && type !== TimeEntryType.CLOCK_OUT) {
       return { success: false, error: 'type must be CLOCK_IN or CLOCK_OUT' };
     }
 
