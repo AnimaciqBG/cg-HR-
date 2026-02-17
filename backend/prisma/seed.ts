@@ -53,7 +53,7 @@ async function main() {
   const passwordHash = await bcrypt.hash('Admin123!@#$', 12);
 
   // Super Admin
-  const superAdmin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@hrplatform.bg' },
     update: {},
     create: {
@@ -80,7 +80,7 @@ async function main() {
   console.log('Super Admin created: admin@hrplatform.bg / Admin123!@#$');
 
   // HR Manager
-  const hrManager = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'hr@hrplatform.bg' },
     update: {},
     create: {
@@ -107,7 +107,7 @@ async function main() {
   console.log('HR Manager created: hr@hrplatform.bg / Admin123!@#$');
 
   // Team Lead
-  const teamLead = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'lead@hrplatform.bg' },
     update: {},
     create: {
@@ -177,46 +177,65 @@ async function main() {
   }
   console.log('Employees created');
 
-  // Shift Templates
-  await Promise.all([
-    prisma.shiftTemplate.create({ data: { name: 'Morning Shift', shiftType: ShiftType.MORNING, startTime: '06:00', endTime: '14:00', breakMinutes: 30, color: '#22C55E' } }),
-    prisma.shiftTemplate.create({ data: { name: 'Day Shift', shiftType: ShiftType.MORNING, startTime: '09:00', endTime: '17:00', breakMinutes: 60, color: '#3B82F6' } }),
-    prisma.shiftTemplate.create({ data: { name: 'Evening Shift', shiftType: ShiftType.EVENING, startTime: '14:00', endTime: '22:00', breakMinutes: 30, color: '#F59E0B' } }),
-    prisma.shiftTemplate.create({ data: { name: 'Night Shift', shiftType: ShiftType.NIGHT, startTime: '22:00', endTime: '06:00', breakMinutes: 30, color: '#6366F1' } }),
-  ]);
-  console.log('Shift templates created');
+  // Shift Templates (idempotent - check before creating)
+  const shiftCount = await prisma.shiftTemplate.count();
+  if (shiftCount === 0) {
+    await Promise.all([
+      prisma.shiftTemplate.create({ data: { name: 'Morning Shift', shiftType: ShiftType.MORNING, startTime: '06:00', endTime: '14:00', breakMinutes: 30, color: '#22C55E' } }),
+      prisma.shiftTemplate.create({ data: { name: 'Day Shift', shiftType: ShiftType.MORNING, startTime: '09:00', endTime: '17:00', breakMinutes: 60, color: '#3B82F6' } }),
+      prisma.shiftTemplate.create({ data: { name: 'Evening Shift', shiftType: ShiftType.EVENING, startTime: '14:00', endTime: '22:00', breakMinutes: 30, color: '#F59E0B' } }),
+      prisma.shiftTemplate.create({ data: { name: 'Night Shift', shiftType: ShiftType.NIGHT, startTime: '22:00', endTime: '06:00', breakMinutes: 30, color: '#6366F1' } }),
+    ]);
+    console.log('Shift templates created');
+  }
 
-  // Leave Policies
-  await Promise.all([
-    prisma.leavePolicy.create({ data: { name: 'Annual Leave (Full-time)', leaveType: LeaveType.PAID, contractType: ContractType.FULL_TIME, daysPerYear: 20, maxCarryOver: 5 } }),
-    prisma.leavePolicy.create({ data: { name: 'Annual Leave (Part-time)', leaveType: LeaveType.PAID, contractType: ContractType.PART_TIME, daysPerYear: 10, maxCarryOver: 2 } }),
-    prisma.leavePolicy.create({ data: { name: 'Sick Leave', leaveType: LeaveType.SICK, daysPerYear: 30 } }),
-    prisma.leavePolicy.create({ data: { name: 'Unpaid Leave', leaveType: LeaveType.UNPAID, daysPerYear: 30, requiresApproval: true } }),
-    prisma.leavePolicy.create({ data: { name: 'Maternity Leave', leaveType: LeaveType.MATERNITY, daysPerYear: 410, minServiceMonths: 6 } }),
-  ]);
-  console.log('Leave policies created');
+  // Leave Policies (idempotent)
+  const policyCount = await prisma.leavePolicy.count();
+  if (policyCount === 0) {
+    await Promise.all([
+      prisma.leavePolicy.create({ data: { name: 'Annual Leave (Full-time)', leaveType: LeaveType.PAID, contractType: ContractType.FULL_TIME, daysPerYear: 20, maxCarryOver: 5 } }),
+      prisma.leavePolicy.create({ data: { name: 'Annual Leave (Part-time)', leaveType: LeaveType.PAID, contractType: ContractType.PART_TIME, daysPerYear: 10, maxCarryOver: 2 } }),
+      prisma.leavePolicy.create({ data: { name: 'Sick Leave', leaveType: LeaveType.SICK, daysPerYear: 30 } }),
+      prisma.leavePolicy.create({ data: { name: 'Unpaid Leave', leaveType: LeaveType.UNPAID, daysPerYear: 30, requiresApproval: true } }),
+      prisma.leavePolicy.create({ data: { name: 'Maternity Leave', leaveType: LeaveType.MATERNITY, daysPerYear: 410, minServiceMonths: 6 } }),
+    ]);
+    console.log('Leave policies created');
+  }
 
-  // Break Policy
-  await prisma.breakPolicy.create({
-    data: { name: 'Standard Break Policy', maxBreaksPerDay: 4, maxMinutesPerBreak: 30, maxTotalMinutes: 60, alertOnExceed: true },
-  });
-  console.log('Break policy created');
+  // Break Policy (idempotent)
+  const breakPolicyCount = await prisma.breakPolicy.count();
+  if (breakPolicyCount === 0) {
+    await prisma.breakPolicy.create({
+      data: { name: 'Standard Break Policy', maxBreaksPerDay: 4, maxMinutesPerBreak: 30, maxTotalMinutes: 60, alertOnExceed: true },
+    });
+    console.log('Break policy created');
+  }
 
-  // Overtime Policy
-  await prisma.overtimePolicy.create({
-    data: { name: 'Standard Overtime Policy', maxDailyHours: 10, maxWeeklyHours: 48, overtimeMultiplier: 1.5, weekendMultiplier: 2.0, holidayMultiplier: 2.5 },
-  });
-  console.log('Overtime policy created');
+  // Overtime Policy (idempotent)
+  const otPolicyCount = await prisma.overtimePolicy.count();
+  if (otPolicyCount === 0) {
+    await prisma.overtimePolicy.create({
+      data: { name: 'Standard Overtime Policy', maxDailyHours: 10, maxWeeklyHours: 48, overtimeMultiplier: 1.5, weekendMultiplier: 2.0, holidayMultiplier: 2.5 },
+    });
+    console.log('Overtime policy created');
+  }
 
-  // Competencies
-  await Promise.all([
-    prisma.competency.create({ data: { name: 'Communication', description: 'Verbal and written communication skills', category: 'Soft Skills' } }),
-    prisma.competency.create({ data: { name: 'Teamwork', description: 'Ability to work effectively in a team', category: 'Soft Skills' } }),
-    prisma.competency.create({ data: { name: 'Technical Skills', description: 'Domain-specific technical proficiency', category: 'Hard Skills' } }),
-    prisma.competency.create({ data: { name: 'Problem Solving', description: 'Analytical and problem-solving abilities', category: 'Hard Skills' } }),
-    prisma.competency.create({ data: { name: 'Leadership', description: 'Leadership and initiative', category: 'Management' } }),
-    prisma.competency.create({ data: { name: 'Time Management', description: 'Efficiency and deadline management', category: 'Soft Skills' } }),
-  ]);
+  // Competencies (idempotent - upsert by name)
+  const competencies = [
+    { name: 'Communication', description: 'Verbal and written communication skills', category: 'Soft Skills' },
+    { name: 'Teamwork', description: 'Ability to work effectively in a team', category: 'Soft Skills' },
+    { name: 'Technical Skills', description: 'Domain-specific technical proficiency', category: 'Hard Skills' },
+    { name: 'Problem Solving', description: 'Analytical and problem-solving abilities', category: 'Hard Skills' },
+    { name: 'Leadership', description: 'Leadership and initiative', category: 'Management' },
+    { name: 'Time Management', description: 'Efficiency and deadline management', category: 'Soft Skills' },
+  ];
+  for (const c of competencies) {
+    await prisma.competency.upsert({
+      where: { name: c.name },
+      update: {},
+      create: c,
+    });
+  }
   console.log('Competencies created');
 
   // Leave balances for current year
@@ -236,21 +255,24 @@ async function main() {
   }
   console.log('Leave balances created');
 
-  // Sample Announcement
-  const adminUser = await prisma.user.findUnique({ where: { email: 'admin@hrplatform.bg' } });
-  if (adminUser) {
-    await prisma.announcement.create({
-      data: {
-        title: 'Welcome to the HR Platform!',
-        content: 'We are excited to launch our new HR management system. Please explore the features and update your profiles.',
-        priority: 'high',
-        isPinned: true,
-        publishedAt: new Date(),
-        createdBy: adminUser.id,
-      },
-    });
+  // Sample Announcement (idempotent)
+  const announcementCount = await prisma.announcement.count();
+  if (announcementCount === 0) {
+    const adminUser = await prisma.user.findUnique({ where: { email: 'admin@hrplatform.bg' } });
+    if (adminUser) {
+      await prisma.announcement.create({
+        data: {
+          title: 'Welcome to the HR Platform!',
+          content: 'We are excited to launch our new HR management system. Please explore the features and update your profiles.',
+          priority: 'high',
+          isPinned: true,
+          publishedAt: new Date(),
+          createdBy: adminUser.id,
+        },
+      });
+    }
+    console.log('Sample announcement created');
   }
-  console.log('Sample announcement created');
 
   console.log('\n✅ Database seeded successfully!');
   console.log('\nDemo accounts:');
