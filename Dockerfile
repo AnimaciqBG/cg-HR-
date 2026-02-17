@@ -22,7 +22,7 @@ RUN npm run build
 # Copy frontend build to backend public dir
 RUN cp -r /app/frontend/dist /app/backend/public
 
-COPY backend/startup.sh ./
+COPY backend/startup.sh backend/seed-check.js ./
 RUN chmod +x startup.sh
 
 ENV NODE_ENV=production
