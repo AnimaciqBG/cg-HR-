@@ -4,7 +4,8 @@ import api from '../services/api';
 import type { Employee } from '../types';
 import {
   ArrowLeft, Mail, Phone, MapPin, Building2, Calendar,
-  User, Edit, Camera, Clock, CheckCircle, XCircle, AlertCircle, History
+  User, Edit, Camera, Clock, CheckCircle, XCircle, AlertCircle, History,
+  Award, TrendingUp, BarChart3, RefreshCw
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { ROLE_LABELS } from '../types';
@@ -25,6 +26,33 @@ interface ProfilePhoto {
   reviewedByUser?: { email: string; employee?: { firstName: string; lastName: string } | null } | null;
 }
 
+interface EmployeeScoreData {
+  id: string;
+  totalScore: number;
+  grade: string;
+  taskRatingScore: number;
+  taskCompletionScore: number;
+  consistencyScore: number;
+  disciplinaryScore: number;
+  totalTasks: number;
+  approvedTasks: number;
+  rejectedTasks: number;
+  avgRating: number;
+  onTimeRate: number;
+  warningCount: number;
+  calculatedAt: string;
+  periodStart: string;
+  periodEnd: string;
+}
+
+const GRADE_COLORS: Record<string, string> = {
+  A: 'from-green-500 to-emerald-600 text-white',
+  B: 'from-blue-500 to-blue-600 text-white',
+  C: 'from-yellow-500 to-amber-600 text-black',
+  D: 'from-orange-500 to-orange-600 text-white',
+  F: 'from-red-500 to-red-600 text-white',
+};
+
 export default function EmployeeProfile() {
   const { id } = useParams();
   const { user: currentUser, hasPermission } = useAuthStore();
@@ -40,12 +68,20 @@ export default function EmployeeProfile() {
   const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Score state
+  const [liveScore, setLiveScore] = useState<EmployeeScoreData | null>(null);
+  const [scoreHistory, setScoreHistory] = useState<EmployeeScoreData[]>([]);
+  const [showScoreDetails, setShowScoreDetails] = useState(false);
+  const [recalculating, setRecalculating] = useState(false);
+
   const isSelf = currentUser?.employee?.id === id;
   const canUploadPhoto = isSelf || hasPermission('employees:write_all');
+  const isManager = ['TEAM_LEAD', 'HR', 'ADMIN', 'PAYROLL_ADMIN', 'SUPER_ADMIN'].includes(currentUser?.role || '');
 
   useEffect(() => {
     loadEmployee();
     loadPhotoHistory();
+    loadScore();
   }, [id]);
 
   async function loadEmployee() {
@@ -67,6 +103,26 @@ export default function EmployeeProfile() {
       const { data } = await api.get(`/photos/history/${id}`);
       setPhotoHistory(data.data || []);
     } catch { /* ignore */ }
+  }
+
+  async function loadScore() {
+    try {
+      const { data } = await api.get(`/scores/employee/${id}/live`);
+      setLiveScore(data.data || null);
+    } catch { /* ignore */ }
+    try {
+      const { data } = await api.get(`/scores/employee/${id}/history`);
+      setScoreHistory(data.data || []);
+    } catch { /* ignore */ }
+  }
+
+  async function handleRecalculate() {
+    setRecalculating(true);
+    try {
+      await api.post(`/scores/calculate/${id}`);
+      await loadScore();
+    } catch { /* ignore */ }
+    setRecalculating(false);
   }
 
   async function handleSave() {
@@ -180,6 +236,14 @@ export default function EmployeeProfile() {
               <span className={`badge ${statusColors[employee.employmentStatus] || 'badge-gray'}`}>
                 {employee.employmentStatus}
               </span>
+              {liveScore && liveScore.totalTasks > 0 && (
+                <button
+                  onClick={() => setShowScoreDetails(!showScoreDetails)}
+                  className={`px-2.5 py-1 rounded-lg text-sm font-bold bg-gradient-to-r ${GRADE_COLORS[liveScore.grade] || GRADE_COLORS.C} flex items-center gap-1 hover:opacity-90 transition-opacity`}
+                >
+                  <Award className="w-3.5 h-3.5" /> {liveScore.grade} ({Math.round(liveScore.totalScore)})
+                </button>
+              )}
             </div>
             <p className="text-gray-400">{employee.jobTitle}</p>
             <p className="text-xs text-gray-500 mt-1">#{employee.employeeNumber}</p>
@@ -267,6 +331,93 @@ export default function EmployeeProfile() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Performance Score Card */}
+      {showScoreDetails && liveScore && (
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-white flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-primary-400" /> Performance Score
+            </h3>
+            <div className="flex items-center gap-2">
+              {isManager && (
+                <button onClick={handleRecalculate} disabled={recalculating} className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1">
+                  <RefreshCw className={`w-3 h-3 ${recalculating ? 'animate-spin' : ''}`} /> Recalculate
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+            {/* Overall */}
+            <div className="text-center">
+              <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br ${GRADE_COLORS[liveScore.grade]} flex items-center justify-center`}>
+                <span className="text-2xl font-bold">{liveScore.grade}</span>
+              </div>
+              <p className="text-2xl font-bold text-white mt-1">{Math.round(liveScore.totalScore)}</p>
+              <p className="text-xs text-gray-500">Overall</p>
+            </div>
+            {/* Breakdown bars */}
+            {([
+              ['Task Rating', liveScore.taskRatingScore, 40, 'bg-blue-500'],
+              ['Completion', liveScore.taskCompletionScore, 25, 'bg-green-500'],
+              ['Consistency', liveScore.consistencyScore, 20, 'bg-purple-500'],
+              ['Discipline', liveScore.disciplinaryScore, 15, 'bg-orange-500'],
+            ] as [string, number, number, string][]).map(([label, value, max, color]) => (
+              <div key={label}>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-gray-400">{label}</span>
+                  <span className="text-gray-300">{Math.round(value)}/{max}</span>
+                </div>
+                <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full ${color}`} style={{ width: `${(value / max) * 100}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Raw metrics */}
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3 pt-3 border-t border-gray-800">
+            {([
+              ['Tasks', liveScore.totalTasks],
+              ['Approved', liveScore.approvedTasks],
+              ['Rejected', liveScore.rejectedTasks],
+              ['Avg Rating', `${liveScore.avgRating}/5`],
+              ['On-time', `${Math.round(liveScore.onTimeRate * 100)}%`],
+              ['Warnings', liveScore.warningCount],
+            ] as [string, string | number][]).map(([label, value]) => (
+              <div key={label} className="text-center">
+                <p className="text-sm font-semibold text-white">{value}</p>
+                <p className="text-xs text-gray-500">{label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Score History */}
+          {scoreHistory.length > 1 && (
+            <div className="mt-4 pt-3 border-t border-gray-800">
+              <p className="text-xs text-gray-500 mb-2">Score History</p>
+              <div className="flex items-end gap-1 h-16">
+                {scoreHistory.slice(0, 12).reverse().map((s, i) => (
+                  <div key={s.id} className="flex-1 flex flex-col items-center gap-0.5" title={`${Math.round(s.totalScore)} (${s.grade}) - ${new Date(s.calculatedAt).toLocaleDateString('bg-BG')}`}>
+                    <div
+                      className={`w-full rounded-t bg-gradient-to-t ${
+                        s.grade === 'A' ? 'from-green-600 to-green-400' :
+                        s.grade === 'B' ? 'from-blue-600 to-blue-400' :
+                        s.grade === 'C' ? 'from-yellow-600 to-yellow-400' :
+                        s.grade === 'D' ? 'from-orange-600 to-orange-400' :
+                        'from-red-600 to-red-400'
+                      }`}
+                      style={{ height: `${Math.max(4, (s.totalScore / 100) * 48)}px` }}
+                    />
+                    <span className="text-[9px] text-gray-600">{s.grade}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

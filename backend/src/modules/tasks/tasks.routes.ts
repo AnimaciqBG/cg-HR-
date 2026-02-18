@@ -616,6 +616,12 @@ router.post('/:id/review', async (req: AuthenticatedRequest, res: Response) => {
 
     await createNotification(task.assignee.userId, notifType, notifTitle, notifMsg, `/tasks`);
 
+    // Recalculate employee performance score on task review
+    try {
+      const { calculateAndSaveScore } = await import('../scores/score.service');
+      await calculateAndSaveScore(task.assigneeId, req.user.id, 6, true);
+    } catch { /* non-critical */ }
+
     res.json({ data: updated });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
