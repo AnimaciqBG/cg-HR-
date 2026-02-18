@@ -26,6 +26,7 @@ import reportsRoutes from './modules/reports/reports.routes';
 import adminRoutes from './modules/admin/admin.routes';
 import photosRoutes from './modules/photos/photos.routes';
 import tasksRoutes from './modules/tasks/tasks.routes';
+import scoresRoutes from './modules/scores/scores.routes';
 
 const app = express();
 
@@ -79,6 +80,7 @@ app.use('/api/reports', reportsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/photos', photosRoutes);
 app.use('/api/tasks', tasksRoutes);
+app.use('/api/scores', scoresRoutes);
 
 // Serve uploaded files (photos, documents)
 const uploadsPath = path.resolve(process.cwd(), 'uploads');

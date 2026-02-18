@@ -219,6 +219,8 @@ enum AuditAction {
   TASK_PROOF_UPLOADED
   TASK_APPROVED
   TASK_REJECTED
+  SCORE_CALCULATED
+  SCORE_RECALCULATED
 }
 
 // ============================================================
@@ -339,6 +341,7 @@ model Employee {
   profilePhotos       ProfilePhoto[]
   assignedTasks       Task[]            @relation("TaskAssignee")
   createdTasks        Task[]            @relation("TaskCreator")
+  scoreSnapshots      EmployeeScore[]
 
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
@@ -1097,6 +1100,48 @@ model TaskProof {
 
   @@index([taskId])
   @@map("task_proofs")
+}
+
+// ============================================================
+// EMPLOYEE PERFORMANCE SCORE
+// ============================================================
+
+model EmployeeScore {
+  id                  String   @id @default(uuid())
+  employeeId          String
+  employee            Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  // Overall score (0-100)
+  totalScore          Float
+  grade               String   // A, B, C, D, F
+
+  // Component breakdown
+  taskRatingScore     Float    @default(0) // avg task rating normalized to 0-40
+  taskCompletionScore Float    @default(0) // completion rate normalized to 0-25
+  consistencyScore    Float    @default(0) // on-time delivery rate to 0-20
+  disciplinaryScore   Float    @default(0) // penalties subtracted, base 15
+
+  // Raw metrics for transparency
+  totalTasks          Int      @default(0)
+  approvedTasks       Int      @default(0)
+  rejectedTasks       Int      @default(0)
+  avgRating           Float    @default(0) // 1-5 scale
+  onTimeRate          Float    @default(0) // 0-1 percentage
+  warningCount        Int      @default(0)
+
+  // Metadata
+  periodStart         DateTime // scoring window start
+  periodEnd           DateTime // scoring window end
+  calculatedAt        DateTime @default(now())
+  calculatedBy        String?  // userId or "system"
+  isLatest            Boolean  @default(false)
+
+  createdAt           DateTime @default(now())
+
+  @@index([employeeId])
+  @@index([isLatest])
+  @@index([calculatedAt])
+  @@map("employee_scores")
 }
 
 // ============================================================
