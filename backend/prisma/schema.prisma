@@ -164,6 +164,10 @@ enum NotificationType {
   TRAINING_DUE
   SYSTEM_ALERT
   GENERAL
+  TASK_ASSIGNED
+  TASK_COMPLETED
+  TASK_APPROVED
+  TASK_REJECTED
 }
 
 enum AuditAction {
@@ -209,6 +213,12 @@ enum AuditAction {
   PHOTO_UPLOADED
   PHOTO_APPROVED
   PHOTO_REJECTED
+  TASK_CREATED
+  TASK_UPDATED
+  TASK_STATUS_CHANGED
+  TASK_PROOF_UPLOADED
+  TASK_APPROVED
+  TASK_REJECTED
 }
 
 // ============================================================
@@ -327,6 +337,8 @@ model Employee {
   compensationHistory CompensationHistory[]
   disciplinaryRecords DisciplinaryRecord[]
   profilePhotos       ProfilePhoto[]
+  assignedTasks       Task[]            @relation("TaskAssignee")
+  createdTasks        Task[]            @relation("TaskCreator")
 
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
@@ -1032,6 +1044,59 @@ model OvertimePolicy {
   updatedAt         DateTime @updatedAt
 
   @@map("overtime_policies")
+}
+
+// ============================================================
+// TASK SYSTEM (assign → proof → review)
+// ============================================================
+
+model Task {
+  id              String      @id @default(uuid())
+  title           String
+  description     String?
+  priority        String      @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  status          String      @default("OPEN")   // OPEN, IN_PROGRESS, COMPLETED, WAITING_FOR_REVIEW, APPROVED, REJECTED
+  dueDate         DateTime?
+
+  assigneeId      String
+  assignee        Employee    @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  createdById     String
+  createdBy       Employee    @relation("TaskCreator", fields: [createdById], references: [id])
+
+  // Review fields
+  reviewRating    Int?        // 1-5 rating when approved/rejected
+  reviewComment   String?
+  reviewedById    String?     // userId of reviewer
+  reviewedAt      DateTime?
+
+  completedAt     DateTime?
+
+  proofs          TaskProof[]
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([assigneeId])
+  @@index([createdById])
+  @@index([status])
+  @@index([dueDate])
+  @@map("tasks")
+}
+
+model TaskProof {
+  id          String   @id @default(uuid())
+  taskId      String
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  fileUrl     String
+  fileName    String
+  fileSize    Int?
+  mimeType    String?
+  uploadedBy  String   // userId
+
+  createdAt   DateTime @default(now())
+
+  @@index([taskId])
+  @@map("task_proofs")
 }
 
 // ============================================================

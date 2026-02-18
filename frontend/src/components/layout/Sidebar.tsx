@@ -3,7 +3,7 @@ import { useAuthStore } from '../../store/authStore';
 import {
   LayoutDashboard, Users, Calendar, Clock, Coffee, CalendarDays,
   FileText, Award, Target, GraduationCap, Megaphone, BarChart3,
-  Settings, Film, LogOut, ChevronLeft, Menu, Camera
+  Settings, Film, LogOut, ChevronLeft, Menu, Camera, ClipboardList, Eye
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -27,6 +27,8 @@ const navigation = [
   { name: 'Performance', href: '/performance', icon: Award, roles: ['EMPLOYEE', 'TEAM_LEAD', 'HR', 'ADMIN', 'PAYROLL_ADMIN', 'SUPER_ADMIN'] },
   { name: 'Goals', href: '/goals', icon: Target, roles: ['EMPLOYEE', 'TEAM_LEAD', 'HR', 'ADMIN', 'PAYROLL_ADMIN', 'SUPER_ADMIN'] },
   { name: 'Training', href: '/training', icon: GraduationCap, roles: ['EMPLOYEE', 'TEAM_LEAD', 'HR', 'ADMIN', 'PAYROLL_ADMIN', 'SUPER_ADMIN'] },
+  { name: 'Tasks', href: '/tasks', icon: ClipboardList, roles: ['EMPLOYEE', 'TEAM_LEAD', 'HR', 'ADMIN', 'PAYROLL_ADMIN', 'SUPER_ADMIN'] },
+  { name: 'Task Review', href: '/task-review', icon: Eye, roles: ['TEAM_LEAD', 'HR', 'ADMIN', 'SUPER_ADMIN'] },
   { name: 'Announcements', href: '/announcements', icon: Megaphone, roles: ['EMPLOYEE', 'TEAM_LEAD', 'HR', 'ADMIN', 'PAYROLL_ADMIN', 'SUPER_ADMIN'] },
   { name: 'Photo Review', href: '/photo-review', icon: Camera, roles: ['TEAM_LEAD', 'HR', 'ADMIN', 'SUPER_ADMIN'] },
   { name: 'Reports', href: '/reports', icon: BarChart3, roles: ['HR', 'ADMIN', 'PAYROLL_ADMIN', 'SUPER_ADMIN'] },
