@@ -7,7 +7,8 @@ WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/ ./
-RUN npm run build
+RUN npx vite build
+RUN ls -la /app/frontend/dist/index.html
 
 # Build backend
 WORKDIR /app/backend
@@ -20,7 +21,8 @@ COPY backend/src ./src
 RUN npm run build
 
 # Copy frontend build to backend public dir
-RUN cp -r /app/frontend/dist /app/backend/public
+RUN mkdir -p /app/backend/public && cp -r /app/frontend/dist/* /app/backend/public/
+RUN ls -la /app/backend/public/index.html
 
 COPY backend/startup.sh backend/seed-check.js ./
 RUN chmod +x startup.sh
