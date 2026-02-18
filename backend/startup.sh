@@ -11,5 +11,9 @@ else
   echo "=== Database already has data, skipping seed ==="
 fi
 
+echo "=== Checking frontend files ==="
+ls -la public/index.html 2>&1 || echo "WARNING: public/index.html not found!"
+ls public/ 2>&1
+
 echo "=== Starting server ==="
 exec node dist/main.js
