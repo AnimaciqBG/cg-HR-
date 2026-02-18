@@ -26,9 +26,9 @@ interface ListBreaksParams {
 }
 
 // Default break policy limits (used when no active BreakPolicy is found)
-const DEFAULT_MAX_BREAKS_PER_DAY = 4;
+const DEFAULT_MAX_BREAKS_PER_DAY = 5;
 const DEFAULT_MAX_MINUTES_PER_BREAK = 30;
-const DEFAULT_MAX_TOTAL_MINUTES = 60;
+const DEFAULT_MAX_TOTAL_MINUTES = 45;
 
 // ============================================================
 // Service

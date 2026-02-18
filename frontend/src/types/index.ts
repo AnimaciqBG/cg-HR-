@@ -10,6 +10,25 @@ export type BreakStatus = 'ACTIVE' | 'COMPLETED' | 'EXCEEDED';
 export type GoalStatus = 'NOT_STARTED' | 'ON_TRACK' | 'AT_RISK' | 'OFF_TRACK' | 'COMPLETED' | 'CANCELLED';
 export type ReviewStatus = 'DRAFT' | 'IN_PROGRESS' | 'COMPLETED' | 'ACKNOWLEDGED';
 
+export const ROLE_LABELS: Record<UserRole, string> = {
+  SUPER_ADMIN: 'Main Manager',
+  ADMIN: 'Deputy Manager',
+  HR: 'Administrator',
+  PAYROLL_ADMIN: 'Senior Team Lead',
+  TEAM_LEAD: 'Team Leader',
+  EMPLOYEE: 'Employee',
+};
+
+export const JOB_POSITIONS = [
+  'Main Manager',
+  'Deputy Manager',
+  'Administrator',
+  'Senior Team Leader',
+  'Team Leader',
+  'Senior Assistant Seller',
+  'Assistant Seller',
+];
+
 export interface User {
   id: string;
   email: string;
@@ -120,6 +139,7 @@ export interface Document {
   expiresAt?: string;
   isConfidential: boolean;
   createdAt: string;
+  assignedTo?: EmployeeSummary;
 }
 
 export interface Announcement {
