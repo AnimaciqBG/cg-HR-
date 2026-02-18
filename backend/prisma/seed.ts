@@ -14,10 +14,10 @@ async function main() {
     { key: 'passwordMinLength', value: '12', type: 'number', group: 'security', description: 'Minimum password length' },
     { key: 'sessionTimeout', value: '15', type: 'number', group: 'security', description: 'Session timeout in minutes' },
     { key: 'defaultLeaveDays', value: '20', type: 'number', group: 'leave', description: 'Default annual leave days' },
-    { key: 'maxBreaksPerDay', value: '4', type: 'number', group: 'break', description: 'Max breaks per day' },
+    { key: 'maxBreaksPerDay', value: '5', type: 'number', group: 'break', description: 'Max breaks per day' },
     { key: 'maxBreakMinutes', value: '30', type: 'number', group: 'break', description: 'Max minutes per break' },
     { key: 'overtimeMultiplier', value: '1.5', type: 'number', group: 'overtime', description: 'Overtime pay multiplier' },
-    { key: 'companyName', value: 'HR Platform', type: 'string', group: 'general', description: 'Company name' },
+    { key: 'companyName', value: 'Cinegrand Cinema', type: 'string', group: 'general', description: 'Company name' },
     { key: 'companyTimezone', value: 'Europe/Sofia', type: 'string', group: 'general', description: 'Company timezone' },
   ];
 
@@ -32,20 +32,13 @@ async function main() {
 
   // Departments
   const departments = await Promise.all([
-    prisma.department.upsert({ where: { code: 'MGMT' }, update: {}, create: { name: 'Management', code: 'MGMT', description: 'Executive management' } }),
-    prisma.department.upsert({ where: { code: 'HR' }, update: {}, create: { name: 'Human Resources', code: 'HR', description: 'HR department' } }),
-    prisma.department.upsert({ where: { code: 'IT' }, update: {}, create: { name: 'IT & Technology', code: 'IT', description: 'Technology department' } }),
-    prisma.department.upsert({ where: { code: 'OPS' }, update: {}, create: { name: 'Operations', code: 'OPS', description: 'Operations department' } }),
-    prisma.department.upsert({ where: { code: 'FIN' }, update: {}, create: { name: 'Finance', code: 'FIN', description: 'Finance and accounting' } }),
-    prisma.department.upsert({ where: { code: 'MKT' }, update: {}, create: { name: 'Marketing', code: 'MKT', description: 'Marketing department' } }),
+    prisma.department.upsert({ where: { code: 'OPS' }, update: {}, create: { name: 'Cinema Operations', code: 'OPS', description: 'Cinema operations department' } }),
   ]);
   console.log('Departments created');
 
   // Locations
   const locations = await Promise.all([
-    prisma.location.upsert({ where: { code: 'HQ' }, update: {}, create: { name: 'Headquarters', code: 'HQ', address: 'бул. Витоша 89', city: 'Sofia', country: 'Bulgaria', timezone: 'Europe/Sofia' } }),
-    prisma.location.upsert({ where: { code: 'BR1' }, update: {}, create: { name: 'Branch Office 1', code: 'BR1', address: 'ул. Александровска 45', city: 'Plovdiv', country: 'Bulgaria', timezone: 'Europe/Sofia' } }),
-    prisma.location.upsert({ where: { code: 'BR2' }, update: {}, create: { name: 'Branch Office 2', code: 'BR2', address: 'ул. Славянска 12', city: 'Varna', country: 'Bulgaria', timezone: 'Europe/Sofia' } }),
+    prisma.location.upsert({ where: { code: 'CG1' }, update: {}, create: { name: 'Cinegrand Cinema', code: 'CG1', address: 'бул. Черни връх 100, Paradise Center', city: 'Sofia', country: 'Bulgaria', timezone: 'Europe/Sofia' } }),
   ]);
   console.log('Locations created');
 
@@ -54,10 +47,10 @@ async function main() {
 
   // Super Admin
   await prisma.user.upsert({
-    where: { email: 'admin@hrplatform.bg' },
+    where: { email: 'admin@cinegrand.bg' },
     update: {},
     create: {
-      email: 'admin@hrplatform.bg',
+      email: 'admin@cinegrand.bg',
       passwordHash,
       role: UserRole.SUPER_ADMIN,
       status: UserStatus.ACTIVE,
@@ -67,7 +60,7 @@ async function main() {
           employeeNumber: 'EMP00001',
           firstName: 'Denis',
           lastName: 'Adminov',
-          jobTitle: 'System Administrator',
+          jobTitle: 'Cinema Manager',
           departmentId: departments[0].id,
           locationId: locations[0].id,
           hireDate: new Date('2024-01-01'),
@@ -77,14 +70,14 @@ async function main() {
       },
     },
   });
-  console.log('Super Admin created: admin@hrplatform.bg / Admin123!@#$');
+  console.log('Super Admin created: admin@cinegrand.bg / Admin123!@#$');
 
   // HR Manager
   await prisma.user.upsert({
-    where: { email: 'hr@hrplatform.bg' },
+    where: { email: 'hr@cinegrand.bg' },
     update: {},
     create: {
-      email: 'hr@hrplatform.bg',
+      email: 'hr@cinegrand.bg',
       passwordHash,
       role: UserRole.HR,
       status: UserStatus.ACTIVE,
@@ -94,8 +87,8 @@ async function main() {
           employeeNumber: 'EMP00002',
           firstName: 'Maria',
           lastName: 'Hristova',
-          jobTitle: 'HR Manager',
-          departmentId: departments[1].id,
+          jobTitle: 'Senior Assistant Seller',
+          departmentId: departments[0].id,
           locationId: locations[0].id,
           hireDate: new Date('2024-02-01'),
           contractType: ContractType.FULL_TIME,
@@ -104,14 +97,14 @@ async function main() {
       },
     },
   });
-  console.log('HR Manager created: hr@hrplatform.bg / Admin123!@#$');
+  console.log('HR Manager created: hr@cinegrand.bg / Admin123!@#$');
 
   // Team Lead
   await prisma.user.upsert({
-    where: { email: 'lead@hrplatform.bg' },
+    where: { email: 'lead@cinegrand.bg' },
     update: {},
     create: {
-      email: 'lead@hrplatform.bg',
+      email: 'lead@cinegrand.bg',
       passwordHash,
       role: UserRole.TEAM_LEAD,
       status: UserStatus.ACTIVE,
@@ -121,8 +114,8 @@ async function main() {
           employeeNumber: 'EMP00003',
           firstName: 'Georgi',
           lastName: 'Petrov',
-          jobTitle: 'Team Lead - Operations',
-          departmentId: departments[3].id,
+          jobTitle: 'Team Leader',
+          departmentId: departments[0].id,
           locationId: locations[0].id,
           hireDate: new Date('2024-03-01'),
           contractType: ContractType.FULL_TIME,
@@ -131,20 +124,20 @@ async function main() {
       },
     },
   });
-  console.log('Team Lead created: lead@hrplatform.bg / Admin123!@#$');
+  console.log('Team Lead created: lead@cinegrand.bg / Admin123!@#$');
 
   // Get employee IDs for manager relations
-  const leadEmployee = await prisma.employee.findFirst({ where: { user: { email: 'lead@hrplatform.bg' } } });
+  const leadEmployee = await prisma.employee.findFirst({ where: { user: { email: 'lead@cinegrand.bg' } } });
 
   // Regular Employees
   const employeeData = [
-    { email: 'ivan@hrplatform.bg', first: 'Ivan', last: 'Dimitrov', title: 'Software Developer', dept: 2, loc: 0 },
-    { email: 'elena@hrplatform.bg', first: 'Elena', last: 'Ivanova', title: 'Operations Specialist', dept: 3, loc: 0 },
-    { email: 'peter@hrplatform.bg', first: 'Peter', last: 'Stoyanov', title: 'Marketing Coordinator', dept: 5, loc: 0 },
-    { email: 'anna@hrplatform.bg', first: 'Anna', last: 'Georgieva', title: 'Accountant', dept: 4, loc: 0 },
-    { email: 'dimitar@hrplatform.bg', first: 'Dimitar', last: 'Nikolov', title: 'Operations Assistant', dept: 3, loc: 1 },
-    { email: 'sofia@hrplatform.bg', first: 'Sofia', last: 'Todorova', title: 'IT Support', dept: 2, loc: 0 },
-    { email: 'alex@hrplatform.bg', first: 'Alexander', last: 'Vasilev', title: 'Junior Developer', dept: 2, loc: 2 },
+    { email: 'ivan@cinegrand.bg', first: 'Ivan', last: 'Dimitrov', title: 'Assistant Seller', dept: 0, loc: 0 },
+    { email: 'elena@cinegrand.bg', first: 'Elena', last: 'Ivanova', title: 'Senior Assistant Seller', dept: 0, loc: 0 },
+    { email: 'peter@cinegrand.bg', first: 'Peter', last: 'Stoyanov', title: 'Assistant Seller', dept: 0, loc: 0 },
+    { email: 'anna@cinegrand.bg', first: 'Anna', last: 'Georgieva', title: 'Team Leader', dept: 0, loc: 0 },
+    { email: 'dimitar@cinegrand.bg', first: 'Dimitar', last: 'Nikolov', title: 'Assistant Seller', dept: 0, loc: 0 },
+    { email: 'sofia@cinegrand.bg', first: 'Sofia', last: 'Todorova', title: 'Senior Assistant Seller', dept: 0, loc: 0 },
+    { email: 'alex@cinegrand.bg', first: 'Alexander', last: 'Vasilev', title: 'Assistant Seller', dept: 0, loc: 0 },
   ];
 
   for (let i = 0; i < employeeData.length; i++) {
@@ -181,9 +174,9 @@ async function main() {
   const shiftCount = await prisma.shiftTemplate.count();
   if (shiftCount === 0) {
     await Promise.all([
-      prisma.shiftTemplate.create({ data: { name: 'Morning Shift', shiftType: ShiftType.MORNING, startTime: '06:00', endTime: '14:00', breakMinutes: 30, color: '#22C55E' } }),
-      prisma.shiftTemplate.create({ data: { name: 'Day Shift', shiftType: ShiftType.MORNING, startTime: '09:00', endTime: '17:00', breakMinutes: 60, color: '#3B82F6' } }),
-      prisma.shiftTemplate.create({ data: { name: 'Evening Shift', shiftType: ShiftType.EVENING, startTime: '14:00', endTime: '22:00', breakMinutes: 30, color: '#F59E0B' } }),
+      prisma.shiftTemplate.create({ data: { name: 'Morning Shift', shiftType: ShiftType.MORNING, startTime: '09:00', endTime: '17:00', breakMinutes: 30, color: '#22C55E' } }),
+      prisma.shiftTemplate.create({ data: { name: 'Afternoon Shift', shiftType: ShiftType.MORNING, startTime: '14:00', endTime: '22:00', breakMinutes: 30, color: '#3B82F6' } }),
+      prisma.shiftTemplate.create({ data: { name: 'Evening Shift', shiftType: ShiftType.EVENING, startTime: '16:30', endTime: '01:00', breakMinutes: 30, color: '#F59E0B' } }),
       prisma.shiftTemplate.create({ data: { name: 'Night Shift', shiftType: ShiftType.NIGHT, startTime: '22:00', endTime: '06:00', breakMinutes: 30, color: '#6366F1' } }),
     ]);
     console.log('Shift templates created');
@@ -206,7 +199,7 @@ async function main() {
   const breakPolicyCount = await prisma.breakPolicy.count();
   if (breakPolicyCount === 0) {
     await prisma.breakPolicy.create({
-      data: { name: 'Standard Break Policy', maxBreaksPerDay: 4, maxMinutesPerBreak: 30, maxTotalMinutes: 60, alertOnExceed: true },
+      data: { name: 'Standard Break Policy', maxBreaksPerDay: 5, maxMinutesPerBreak: 30, maxTotalMinutes: 45, alertOnExceed: true },
     });
     console.log('Break policy created');
   }
@@ -258,12 +251,12 @@ async function main() {
   // Sample Announcement (idempotent)
   const announcementCount = await prisma.announcement.count();
   if (announcementCount === 0) {
-    const adminUser = await prisma.user.findUnique({ where: { email: 'admin@hrplatform.bg' } });
+    const adminUser = await prisma.user.findUnique({ where: { email: 'admin@cinegrand.bg' } });
     if (adminUser) {
       await prisma.announcement.create({
         data: {
-          title: 'Welcome to the HR Platform!',
-          content: 'We are excited to launch our new HR management system. Please explore the features and update your profiles.',
+          title: 'Welcome to the Cinegrand HR Platform!',
+          content: 'We are excited to launch our new HR management system for Cinegrand Cinema. Please explore the features and update your profiles.',
           priority: 'high',
           isPinned: true,
           publishedAt: new Date(),
@@ -276,10 +269,10 @@ async function main() {
 
   console.log('\n✅ Database seeded successfully!');
   console.log('\nDemo accounts:');
-  console.log('  Super Admin: admin@hrplatform.bg / Admin123!@#$');
-  console.log('  HR Manager:  hr@hrplatform.bg / Admin123!@#$');
-  console.log('  Team Lead:   lead@hrplatform.bg / Admin123!@#$');
-  console.log('  Employee:    ivan@hrplatform.bg / Admin123!@#$');
+  console.log('  Super Admin: admin@cinegrand.bg / Admin123!@#$');
+  console.log('  HR Manager:  hr@cinegrand.bg / Admin123!@#$');
+  console.log('  Team Lead:   lead@cinegrand.bg / Admin123!@#$');
+  console.log('  Employee:    ivan@cinegrand.bg / Admin123!@#$');
 }
 
 main()

@@ -73,7 +73,7 @@ export default function Leaves() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Leave Management</h1>
+        <h1 className="text-2xl font-bold text-white">Leave Management</h1>
         <button onClick={() => setShowCreate(!showCreate)} className="btn-primary">
           <Plus className="w-4 h-4 mr-1" /> Request Leave
         </button>
@@ -83,11 +83,11 @@ export default function Leaves() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {balances.map((b) => (
           <div key={b.id} className="card p-4">
-            <p className="text-xs text-gray-500 uppercase">{b.leaveType}</p>
-            <p className="text-2xl font-bold mt-1">{b.totalDays - b.usedDays - b.pendingDays}</p>
+            <p className="text-xs text-gray-400 uppercase">{b.leaveType}</p>
+            <p className="text-2xl font-bold mt-1 text-white">{b.totalDays - b.usedDays - b.pendingDays}</p>
             <p className="text-xs text-gray-500">of {b.totalDays} days left</p>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-2">
-              <div className="bg-primary-600 h-1.5 rounded-full" style={{ width: `${Math.min(100, ((b.usedDays + b.pendingDays) / b.totalDays) * 100)}%` }}></div>
+            <div className="w-full bg-gray-700 rounded-full h-1.5 mt-2">
+              <div className="bg-primary-400 h-1.5 rounded-full" style={{ width: `${Math.min(100, ((b.usedDays + b.pendingDays) / b.totalDays) * 100)}%` }}></div>
             </div>
           </div>
         ))}
@@ -96,24 +96,24 @@ export default function Leaves() {
       {/* Create Form */}
       {showCreate && (
         <div className="card p-6">
-          <h2 className="font-semibold mb-4">New Leave Request</h2>
+          <h2 className="font-semibold mb-4 text-white">New Leave Request</h2>
           <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">Leave Type</label>
+              <label className="text-sm font-medium text-gray-300">Leave Type</label>
               <select value={form.leaveType} onChange={(e) => setForm({ ...form, leaveType: e.target.value })} className="input-field mt-1">
                 {LEAVE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium">Start Date</label>
+              <label className="text-sm font-medium text-gray-300">Start Date</label>
               <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className="input-field mt-1" required />
             </div>
             <div>
-              <label className="text-sm font-medium">End Date</label>
+              <label className="text-sm font-medium text-gray-300">End Date</label>
               <input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} className="input-field mt-1" required />
             </div>
             <div>
-              <label className="text-sm font-medium">Reason</label>
+              <label className="text-sm font-medium text-gray-300">Reason</label>
               <input value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} className="input-field mt-1" placeholder="Optional" />
             </div>
             <div className="md:col-span-2 flex gap-2">
@@ -125,12 +125,12 @@ export default function Leaves() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b dark:border-gray-700">
-        <button onClick={() => setTab('my')} className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === 'my' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
+      <div className="flex gap-1 border-b border-gray-700">
+        <button onClick={() => setTab('my')} className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === 'my' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>
           My Requests
         </button>
         {hasMinRole('TEAM_LEAD') && (
-          <button onClick={() => setTab('pending')} className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === 'pending' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
+          <button onClick={() => setTab('pending')} className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === 'pending' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>
             Pending Approvals
           </button>
         )}
@@ -138,31 +138,31 @@ export default function Leaves() {
 
       {/* Requests List */}
       {loading ? (
-        <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>
+        <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-400"></div></div>
       ) : requests.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">No leave requests</div>
+        <div className="text-center py-8 text-gray-400">No leave requests</div>
       ) : (
         <div className="space-y-3">
           {requests.map((req) => (
             <div key={req.id} className="card p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Calendar className="w-5 h-5 text-gray-400" />
+                  <Calendar className="w-5 h-5 text-gray-500" />
                   <div>
-                    {req.employee && <p className="text-sm font-medium">{req.employee.firstName} {req.employee.lastName}</p>}
-                    <p className="text-sm">{req.leaveType} - {req.totalDays} day(s)</p>
+                    {req.employee && <p className="text-sm font-medium text-gray-200">{req.employee.firstName} {req.employee.lastName}</p>}
+                    <p className="text-sm text-gray-300">{req.leaveType} - {req.totalDays} day(s)</p>
                     <p className="text-xs text-gray-500">
                       {new Date(req.startDate).toLocaleDateString('bg-BG')} - {new Date(req.endDate).toLocaleDateString('bg-BG')}
                     </p>
-                    {req.reason && <p className="text-xs text-gray-400 mt-1">{req.reason}</p>}
+                    {req.reason && <p className="text-xs text-gray-500 mt-1">{req.reason}</p>}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`badge ${statusColors[req.status] || 'badge-gray'}`}>{req.status}</span>
                   {tab === 'pending' && req.status === 'PENDING' && hasMinRole('TEAM_LEAD') && (
                     <div className="flex gap-1 ml-2">
-                      <button onClick={() => handleApprove(req.id)} className="p-1.5 rounded-lg bg-green-100 text-green-600 hover:bg-green-200"><Check className="w-4 h-4" /></button>
-                      <button onClick={() => handleReject(req.id)} className="p-1.5 rounded-lg bg-red-100 text-red-600 hover:bg-red-200"><X className="w-4 h-4" /></button>
+                      <button onClick={() => handleApprove(req.id)} className="p-1.5 rounded-lg bg-green-900/40 text-green-400 hover:bg-green-900/60"><Check className="w-4 h-4" /></button>
+                      <button onClick={() => handleReject(req.id)} className="p-1.5 rounded-lg bg-red-900/40 text-red-400 hover:bg-red-900/60"><X className="w-4 h-4" /></button>
                     </div>
                   )}
                 </div>

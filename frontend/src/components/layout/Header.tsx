@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Search, Sun, Moon, User } from 'lucide-react';
+import { Bell, Search, User } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import api from '../../services/api';
 import type { Notification } from '../../types';
@@ -8,17 +8,11 @@ import type { Notification } from '../../types';
 export default function Header() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
-  const [dark, setDark] = useState(localStorage.getItem('theme') === 'dark');
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const notifRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark);
-    localStorage.setItem('theme', dark ? 'dark' : 'light');
-  }, [dark]);
 
   useEffect(() => {
     fetchNotifications();
@@ -61,11 +55,11 @@ export default function Header() {
   }
 
   return (
-    <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6 sticky top-0 z-10">
+    <header className="h-16 bg-gray-950 border-b border-gray-800 flex items-center justify-between px-6 sticky top-0 z-10">
       {/* Search */}
       <form onSubmit={handleSearch} className="flex items-center w-96 max-w-md">
         <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           <input
             type="text"
             placeholder="Search employees, documents..."
@@ -78,23 +72,15 @@ export default function Header() {
 
       {/* Right side */}
       <div className="flex items-center gap-3">
-        {/* Theme toggle */}
-        <button
-          onClick={() => setDark(!dark)}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-        >
-          {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </button>
-
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 relative"
+            className="p-2 rounded-lg hover:bg-gray-800 relative text-gray-400"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 text-black text-xs rounded-full flex items-center justify-center font-bold">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -102,10 +88,10 @@ export default function Header() {
 
           {showNotifications && (
             <div className="absolute right-0 top-12 w-80 card shadow-lg max-h-96 overflow-hidden z-50">
-              <div className="flex items-center justify-between p-3 border-b dark:border-gray-700">
-                <h3 className="font-semibold text-sm">Notifications</h3>
+              <div className="flex items-center justify-between p-3 border-b border-gray-800">
+                <h3 className="font-semibold text-sm text-white">Notifications</h3>
                 {unreadCount > 0 && (
-                  <button onClick={markAllRead} className="text-xs text-primary-600 hover:underline">
+                  <button onClick={markAllRead} className="text-xs text-primary-400 hover:underline">
                     Mark all read
                   </button>
                 )}
@@ -115,8 +101,8 @@ export default function Header() {
                   <p className="p-4 text-sm text-gray-500 text-center">No notifications</p>
                 ) : (
                   notifications.slice(0, 10).map((n) => (
-                    <div key={n.id} className={`p-3 border-b dark:border-gray-700 text-sm ${!n.isRead ? 'bg-primary-50 dark:bg-primary-900/20' : ''}`}>
-                      <p className="font-medium">{n.title}</p>
+                    <div key={n.id} className={`p-3 border-b border-gray-800 text-sm ${!n.isRead ? 'bg-primary-900/20' : ''}`}>
+                      <p className="font-medium text-white">{n.title}</p>
                       <p className="text-gray-500 text-xs mt-0.5">{n.message}</p>
                     </div>
                   ))
@@ -127,12 +113,12 @@ export default function Header() {
         </div>
 
         {/* User avatar */}
-        <div className="flex items-center gap-2 pl-2 border-l dark:border-gray-700">
-          <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
-            <User className="w-4 h-4 text-primary-600" />
+        <div className="flex items-center gap-2 pl-2 border-l border-gray-800">
+          <div className="w-8 h-8 rounded-full bg-primary-900/50 border border-primary-700/50 flex items-center justify-center">
+            <User className="w-4 h-4 text-primary-400" />
           </div>
           {user?.employee && (
-            <span className="text-sm font-medium hidden md:block">
+            <span className="text-sm font-medium text-gray-300 hidden md:block">
               {user.employee.firstName}
             </span>
           )}
