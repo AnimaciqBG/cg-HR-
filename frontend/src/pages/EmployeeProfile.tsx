@@ -45,6 +45,7 @@ export default function EmployeeProfile() {
 
   useEffect(() => {
     loadEmployee();
+    loadPhotoHistory();
   }, [id]);
 
   async function loadEmployee() {
