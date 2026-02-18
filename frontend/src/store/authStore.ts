@@ -62,9 +62,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   hasPermission: (permission: string) => {
     const { user } = get();
     if (!user) return false;
+    // SUPER_ADMIN always has all permissions
     if (user.role === 'SUPER_ADMIN') return true;
-    // Simplified - full permission check is backend-side
-    return true;
+    // Check effective permissions returned from /auth/me
+    if (user.permissions && user.permissions.length > 0) {
+      return user.permissions.includes(permission);
+    }
+    // Fallback: deny if no permissions loaded
+    return false;
   },
 
   hasMinRole: (role: UserRole) => {

@@ -38,6 +38,31 @@ export interface User {
   lastLoginAt: string | null;
   mustChangePassword: boolean;
   employee?: EmployeeSummary;
+  permissions?: string[];
+}
+
+export interface PermissionOverride {
+  permission: string;
+  granted: boolean;
+}
+
+export interface PermissionMatrixEntry {
+  user: {
+    id: string;
+    email: string;
+    role: UserRole;
+    employee?: { firstName: string; lastName: string; jobTitle: string } | null;
+  };
+  rolePermissions: string[];
+  overrides: Record<string, boolean>;
+  effectivePermissions: string[];
+}
+
+export interface PermissionCatalog {
+  permissions: string[];
+  categories: Record<string, string[]>;
+  roles: string[];
+  roleDefaults: Record<string, string[]>;
 }
 
 export interface EmployeeSummary {

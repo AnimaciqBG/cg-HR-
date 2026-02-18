@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { authService } from './auth.service';
 import { authGuard, AuthenticatedRequest } from '../../common/guards/auth.guard';
 import { getClientIp, getUserAgent } from '../../common/utils/audit';
+import { resolveEffectivePermissions } from '../../common/guards/rbac.guard';
 
 const router = Router();
 
@@ -195,7 +196,15 @@ router.get('/me', authGuard, async (req: AuthenticatedRequest, res: Response) =>
       },
     });
 
-    res.json(user);
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    // Resolve effective permissions (role defaults + per-user overrides)
+    const effectivePermissions = await resolveEffectivePermissions(user.id, user.role);
+
+    res.json({ ...user, permissions: effectivePermissions });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }

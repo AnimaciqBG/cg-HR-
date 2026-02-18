@@ -205,6 +205,7 @@ enum AuditAction {
   TWO_FA_DISABLED
   PASSWORD_CHANGED
   PASSWORD_RESET
+  PERMISSION_CHANGED
 }
 
 // ============================================================
@@ -233,6 +234,7 @@ model User {
   notifications       Notification[]
   createdApprovals    Approval[]   @relation("ApprovalCreatedBy")
   approverApprovals   Approval[]   @relation("ApprovalApprover")
+  permissionOverrides UserPermission[]
 
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
@@ -1026,4 +1028,24 @@ model OvertimePolicy {
   updatedAt         DateTime @updatedAt
 
   @@map("overtime_policies")
+}
+
+// ============================================================
+// PER-USER PERMISSION OVERRIDES
+// ============================================================
+
+model UserPermission {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission  String   // e.g. "employees:read", "admin:settings"
+  granted     Boolean  @default(true) // true = allow override, false = deny override
+  grantedBy   String?  // userId of admin who set this override
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, permission])
+  @@index([userId])
+  @@map("user_permissions")
 }
