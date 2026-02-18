@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
+import fs from 'fs';
 import { config } from './config';
 import logger from './config/logger';
 import prisma from './config/database';
@@ -75,24 +76,47 @@ app.use('/api/notifications', notificationsRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Serve frontend static files in production
-if (config.nodeEnv === 'production') {
-  const publicPath = path.join(__dirname, '..', 'public');
-  const indexPath = path.join(publicPath, 'index.html');
-  app.use(express.static(publicPath));
+// Serve frontend static files
+// Try multiple possible locations for the frontend build
+const possiblePaths = [
+  path.join(__dirname, '..', 'public'),
+  path.join(process.cwd(), 'public'),
+  '/app/backend/public',
+];
 
+const publicPath = possiblePaths.find(p => fs.existsSync(path.join(p, 'index.html'))) || possiblePaths[0];
+const indexPath = path.join(publicPath, 'index.html');
+const frontendExists = fs.existsSync(indexPath);
+
+logger.info(`Frontend check: publicPath=${publicPath}, exists=${frontendExists}`);
+logger.info(`Checked paths: ${possiblePaths.map(p => `${p} (${fs.existsSync(path.join(p, 'index.html'))})`).join(', ')}`);
+logger.info(`__dirname=${__dirname}, cwd=${process.cwd()}, NODE_ENV=${config.nodeEnv}`);
+
+if (frontendExists) {
+  app.use(express.static(publicPath));
   // SPA fallback - serve index.html for all non-API routes
   app.get('*', (_req, res) => {
-    if (require('fs').existsSync(indexPath)) {
-      res.sendFile(indexPath);
-    } else {
-      res.status(404).json({ error: 'Frontend not available' });
-    }
+    res.sendFile(indexPath);
   });
 } else {
-  // 404 handler for development (API only)
-  app.use((_req, res) => {
-    res.status(404).json({ error: 'Not found' });
+  // Serve diagnostic info when frontend files are missing
+  app.get('*', (_req, res) => {
+    const diag = {
+      error: 'Frontend not available',
+      debug: {
+        __dirname,
+        cwd: process.cwd(),
+        nodeEnv: config.nodeEnv,
+        checkedPaths: possiblePaths.map(p => ({
+          path: p,
+          exists: fs.existsSync(p),
+          indexExists: fs.existsSync(path.join(p, 'index.html')),
+          contents: fs.existsSync(p) ? fs.readdirSync(p) : [],
+        })),
+        parentContents: fs.existsSync(path.join(__dirname, '..')) ? fs.readdirSync(path.join(__dirname, '..')) : [],
+      },
+    };
+    res.status(404).json(diag);
   });
 }
 
