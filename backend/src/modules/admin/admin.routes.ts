@@ -3,6 +3,11 @@ import { UserRole, AuditAction } from '@prisma/client';
 import prisma from '../../config/database';
 import { authGuard, AuthenticatedRequest } from '../../common/guards/auth.guard';
 import { requirePermission, requireRole } from '../../common/guards/rbac.guard';
+import {
+  ALL_PERMISSIONS, PERMISSION_CATEGORIES, ROLE_PERMISSIONS,
+  resolveEffectivePermissions, getUserOverrides, getRolePermissions,
+  type Permission,
+} from '../../common/guards/rbac.guard';
 import { createAuditLog, getClientIp, getUserAgent } from '../../common/utils/audit';
 import { getLicenseStatus } from '../../common/utils/license';
 import { parsePagination, buildPaginatedResult } from '../../common/utils/pagination';
@@ -306,6 +311,204 @@ router.post('/backup', authGuard, requirePermission('admin:backup'), async (req:
       objectType: 'System', ipAddress: getClientIp(req), userAgent: getUserAgent(req),
     });
     res.json({ message: 'Backup initiated', timestamp: new Date().toISOString() });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ============ PERMISSIONS ENGINE ============
+
+// GET /api/admin/permissions/catalog - list all permission keys + categories
+router.get('/permissions/catalog', authGuard, requirePermission('admin:permissions'), async (_req: AuthenticatedRequest, res: Response) => {
+  try {
+    res.json({
+      permissions: ALL_PERMISSIONS,
+      categories: PERMISSION_CATEGORIES,
+      roles: Object.keys(ROLE_PERMISSIONS),
+      roleDefaults: Object.fromEntries(
+        Object.entries(ROLE_PERMISSIONS).map(([role, perms]) => [role, perms])
+      ),
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/admin/permissions/user/:userId - get effective permissions + overrides for a user
+router.get('/permissions/user/:userId', authGuard, requirePermission('admin:permissions'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, role: true, employee: { select: { firstName: true, lastName: true, jobTitle: true } } },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    const rolePermissions = getRolePermissions(user.role);
+    const overrides = await getUserOverrides(userId);
+    const effectivePermissions = await resolveEffectivePermissions(userId, user.role);
+
+    res.json({
+      user: { id: user.id, email: user.email, role: user.role, employee: user.employee },
+      rolePermissions,
+      overrides,
+      effectivePermissions,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PUT /api/admin/permissions/user/:userId - set permission overrides for a user
+router.put('/permissions/user/:userId', authGuard, requirePermission('admin:permissions'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const { overrides } = req.body as { overrides: { permission: string; granted: boolean }[] };
+
+    if (!overrides || !Array.isArray(overrides)) {
+      res.status(400).json({ error: 'overrides array is required' });
+      return;
+    }
+
+    // Validate all permissions
+    for (const o of overrides) {
+      if (!ALL_PERMISSIONS.includes(o.permission as Permission)) {
+        res.status(400).json({ error: `Invalid permission: ${o.permission}` });
+        return;
+      }
+    }
+
+    const targetUser = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true } });
+    if (!targetUser) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    // Cannot modify SUPER_ADMIN permissions unless you are SUPER_ADMIN
+    if (targetUser.role === UserRole.SUPER_ADMIN && req.user!.role !== UserRole.SUPER_ADMIN) {
+      res.status(403).json({ error: 'Cannot modify Main Manager permissions' });
+      return;
+    }
+
+    // Get existing overrides for audit logging (before state)
+    const existingOverrides = await prisma.userPermission.findMany({ where: { userId } });
+
+    // Delete all existing overrides for this user and recreate
+    await prisma.$transaction(async (tx) => {
+      await tx.userPermission.deleteMany({ where: { userId } });
+
+      if (overrides.length > 0) {
+        await tx.userPermission.createMany({
+          data: overrides.map((o) => ({
+            userId,
+            permission: o.permission,
+            granted: o.granted,
+            grantedBy: req.user!.id,
+          })),
+        });
+      }
+    });
+
+    // Audit log
+    await createAuditLog({
+      actorId: req.user!.id,
+      action: AuditAction.PERMISSION_CHANGED,
+      objectType: 'UserPermission',
+      objectId: userId,
+      before: { overrides: existingOverrides.map(o => ({ permission: o.permission, granted: o.granted })) } as any,
+      after: { overrides } as any,
+      ipAddress: getClientIp(req),
+      userAgent: getUserAgent(req),
+    });
+
+    // Return updated effective permissions
+    const effectivePermissions = await resolveEffectivePermissions(userId, targetUser.role);
+    res.json({ message: 'Permissions updated', effectivePermissions });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE /api/admin/permissions/user/:userId/:permission - remove a single override
+router.delete('/permissions/user/:userId/:permission', authGuard, requirePermission('admin:permissions'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { userId, permission } = req.params;
+
+    const existing = await prisma.userPermission.findUnique({
+      where: { userId_permission: { userId, permission } },
+    });
+
+    if (!existing) {
+      res.status(404).json({ error: 'Override not found' });
+      return;
+    }
+
+    await prisma.userPermission.delete({
+      where: { userId_permission: { userId, permission } },
+    });
+
+    await createAuditLog({
+      actorId: req.user!.id,
+      action: AuditAction.PERMISSION_CHANGED,
+      objectType: 'UserPermission',
+      objectId: userId,
+      before: { permission, granted: existing.granted } as any,
+      after: { permission, action: 'removed' } as any,
+      ipAddress: getClientIp(req),
+      userAgent: getUserAgent(req),
+    });
+
+    res.json({ message: 'Override removed' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/admin/permissions/matrix - get all users with their permissions for the matrix view
+router.get('/permissions/matrix', authGuard, requirePermission('admin:permissions'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { deletedAt: null, status: { not: 'INACTIVE' } },
+      select: {
+        id: true, email: true, role: true,
+        employee: { select: { firstName: true, lastName: true, jobTitle: true } },
+        permissionOverrides: { select: { permission: true, granted: true } },
+      },
+      orderBy: { role: 'desc' },
+    });
+
+    const matrix = users.map((u) => {
+      const rolePerms = getRolePermissions(u.role);
+      const overrideMap: Record<string, boolean> = {};
+      for (const o of u.permissionOverrides) {
+        overrideMap[o.permission] = o.granted;
+      }
+
+      // Calculate effective
+      const effective = new Set<string>(rolePerms);
+      for (const o of u.permissionOverrides) {
+        if (o.granted) effective.add(o.permission);
+        else effective.delete(o.permission);
+      }
+
+      return {
+        user: { id: u.id, email: u.email, role: u.role, employee: u.employee },
+        rolePermissions: rolePerms,
+        overrides: overrideMap,
+        effectivePermissions: Array.from(effective),
+      };
+    });
+
+    res.json({
+      matrix,
+      allPermissions: ALL_PERMISSIONS,
+      categories: PERMISSION_CATEGORIES,
+    });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }

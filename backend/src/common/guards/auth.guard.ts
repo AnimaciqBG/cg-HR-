@@ -11,6 +11,7 @@ export interface AuthenticatedRequest extends Request {
     role: UserRole;
     status: UserStatus;
     employeeId?: string;
+    effectivePermissions?: string[];
   };
 }
 
