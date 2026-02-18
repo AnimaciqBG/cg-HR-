@@ -18,6 +18,8 @@ import Announcements from './pages/Announcements';
 import Reports from './pages/Reports';
 import Admin from './pages/Admin';
 import PhotoReview from './pages/PhotoReview';
+import Tasks from './pages/Tasks';
+import TaskReview from './pages/TaskReview';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuthStore();
@@ -72,6 +74,8 @@ export default function App() {
         <Route path="training" element={<Training />} />
         <Route path="announcements" element={<Announcements />} />
         <Route path="reports" element={<Reports />} />
+        <Route path="tasks" element={<Tasks />} />
+        <Route path="task-review" element={<TaskReview />} />
         <Route path="photo-review" element={<PhotoReview />} />
         <Route path="admin" element={<Admin />} />
       </Route>
