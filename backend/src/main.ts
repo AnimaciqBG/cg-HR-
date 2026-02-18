@@ -24,6 +24,7 @@ import announcementsRoutes from './modules/announcements/announcements.routes';
 import notificationsRoutes from './modules/notifications/notifications.routes';
 import reportsRoutes from './modules/reports/reports.routes';
 import adminRoutes from './modules/admin/admin.routes';
+import photosRoutes from './modules/photos/photos.routes';
 
 const app = express();
 
@@ -75,6 +76,14 @@ app.use('/api/announcements', announcementsRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/photos', photosRoutes);
+
+// Serve uploaded files (photos, documents)
+const uploadsPath = path.resolve(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsPath));
 
 // Serve frontend static files
 // Try multiple possible locations for the frontend build

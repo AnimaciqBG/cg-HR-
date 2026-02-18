@@ -206,6 +206,9 @@ enum AuditAction {
   PASSWORD_CHANGED
   PASSWORD_RESET
   PERMISSION_CHANGED
+  PHOTO_UPLOADED
+  PHOTO_APPROVED
+  PHOTO_REJECTED
 }
 
 // ============================================================
@@ -323,6 +326,7 @@ model Employee {
   onboardingTasks     OnboardingTask[]
   compensationHistory CompensationHistory[]
   disciplinaryRecords DisciplinaryRecord[]
+  profilePhotos       ProfilePhoto[]
 
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
@@ -1028,6 +1032,35 @@ model OvertimePolicy {
   updatedAt         DateTime @updatedAt
 
   @@map("overtime_policies")
+}
+
+// ============================================================
+// PROFILE PHOTOS (with approval workflow)
+// ============================================================
+
+model ProfilePhoto {
+  id              String   @id @default(uuid())
+  employeeId      String
+  employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  fileUrl         String
+  fileName        String
+  fileSize        Int?
+  mimeType        String?
+
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  reviewedBy      String?  // userId of reviewer
+  reviewedAt      DateTime?
+  reviewComment   String?  // comment when rejected
+  isActive        Boolean  @default(false) // only one active photo per employee
+
+  uploadedBy      String   // userId who uploaded (self or admin)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([employeeId])
+  @@index([status])
+  @@map("profile_photos")
 }
 
 // ============================================================
