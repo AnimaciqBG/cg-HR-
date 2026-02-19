@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Bell, Search, User } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Bell, Search, User, Camera, Clock } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import api from '../../services/api';
 import type { Notification } from '../../types';
@@ -14,8 +14,19 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const notifRef = useRef<HTMLDivElement>(null);
 
+  // Photo upload state
+  const [uploading, setUploading] = useState(false);
+  const [hasPending, setHasPending] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showAvatarMenu, setShowAvatarMenu] = useState(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
+
+  const employeeId = user?.employee?.id;
+  const photoUrl = (user?.employee as any)?.photoUrl || null;
+
   useEffect(() => {
     fetchNotifications();
+    if (employeeId) checkPendingPhoto();
     const interval = setInterval(fetchNotifications, 60000);
     return () => clearInterval(interval);
   }, []);
@@ -24,6 +35,9 @@ export default function Header() {
     function handleClick(e: MouseEvent) {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setShowNotifications(false);
+      }
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setShowAvatarMenu(false);
       }
     }
     document.addEventListener('mousedown', handleClick);
@@ -44,6 +58,44 @@ export default function Header() {
       setUnreadCount(0);
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     } catch { /* ignore */ }
+  }
+
+  async function checkPendingPhoto() {
+    if (!employeeId) return;
+    try {
+      const { data } = await api.get(`/photos/history/${employeeId}`);
+      const photos = data.data || [];
+      setHasPending(photos.some((p: any) => p.status === 'PENDING'));
+    } catch { /* ignore */ }
+  }
+
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !employeeId) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      alert('Only JPEG, PNG, and WebP are allowed');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File must be under 5MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('photo', file);
+      await api.post(`/photos/upload/${employeeId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setHasPending(true);
+      setShowAvatarMenu(false);
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Failed to upload photo');
+    }
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   function handleSearch(e: React.FormEvent) {
@@ -112,15 +164,87 @@ export default function Header() {
           )}
         </div>
 
-        {/* User avatar */}
-        <div className="flex items-center gap-2 pl-2 border-l border-gray-800">
-          <div className="w-8 h-8 rounded-full bg-primary-900/50 border border-primary-700/50 flex items-center justify-center">
-            <User className="w-4 h-4 text-primary-400" />
-          </div>
+        {/* User avatar with photo upload */}
+        <div className="relative flex items-center gap-2 pl-2 border-l border-gray-800" ref={avatarRef}>
+          <button
+            onClick={() => setShowAvatarMenu(!showAvatarMenu)}
+            className="relative group"
+          >
+            <div className="w-9 h-9 rounded-full bg-primary-900/50 border-2 border-primary-700/50 flex items-center justify-center overflow-hidden hover:border-primary-500 transition-colors">
+              {photoUrl ? (
+                <img src={photoUrl} alt="" className="w-9 h-9 rounded-full object-cover" />
+              ) : (
+                <User className="w-4 h-4 text-primary-400" />
+              )}
+            </div>
+            {hasPending && (
+              <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-yellow-500 rounded-full flex items-center justify-center">
+                <Clock className="w-2 h-2 text-black" />
+              </div>
+            )}
+            {uploading && (
+              <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              </div>
+            )}
+          </button>
           {user?.employee && (
             <span className="text-sm font-medium text-gray-300 hidden md:block">
               {user.employee.firstName}
             </span>
+          )}
+
+          {/* Avatar dropdown menu */}
+          {showAvatarMenu && (
+            <div className="absolute right-0 top-12 w-56 card shadow-lg z-50 overflow-hidden">
+              {/* User info */}
+              <div className="p-3 border-b border-gray-800">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-full bg-primary-900/50 flex items-center justify-center overflow-hidden">
+                    {photoUrl ? (
+                      <img src={photoUrl} alt="" className="w-10 h-10 rounded-full object-cover" />
+                    ) : (
+                      <User className="w-5 h-5 text-primary-400" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">
+                      {user?.employee ? `${user.employee.firstName} ${user.employee.lastName}` : user?.email}
+                    </p>
+                    <p className="text-xs text-gray-500">{user?.email}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="p-1">
+                {employeeId && (
+                  <Link
+                    to={`/employees/${employeeId}`}
+                    onClick={() => setShowAvatarMenu(false)}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-lg"
+                  >
+                    <User className="w-4 h-4" /> View Profile
+                  </Link>
+                )}
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-lg disabled:opacity-50"
+                >
+                  <Camera className="w-4 h-4" /> Change Photo
+                  {hasPending && <span className="ml-auto text-xs text-yellow-400">pending</span>}
+                </button>
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handlePhotoUpload}
+                className="hidden"
+              />
+            </div>
           )}
         </div>
       </div>
