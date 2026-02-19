@@ -168,6 +168,7 @@ enum NotificationType {
   TASK_COMPLETED
   TASK_APPROVED
   TASK_REJECTED
+  NEW_MESSAGE
 }
 
 enum AuditAction {
@@ -224,6 +225,9 @@ enum AuditAction {
   ONBOARDING_STARTED
   ONBOARDING_EMAIL_SENT
   ONBOARDING_COMPLETED
+  MESSAGE_SENT
+  MESSAGE_ATTACHMENT_UPLOADED
+  CONVERSATION_CREATED
 }
 
 // ============================================================
@@ -253,6 +257,8 @@ model User {
   createdApprovals    Approval[]   @relation("ApprovalCreatedBy")
   approverApprovals   Approval[]   @relation("ApprovalApprover")
   permissionOverrides UserPermission[]
+  conversationParticipants ConversationParticipant[]
+  sentMessages        Message[]
 
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
@@ -1194,4 +1200,80 @@ model UserPermission {
   @@unique([userId, permission])
   @@index([userId])
   @@map("user_permissions")
+}
+
+// ============================================================
+// INTERNAL MESSAGING
+// ============================================================
+
+model Conversation {
+  id              String                    @id @default(uuid())
+  title           String?                   // null for 1-on-1, set for group chats
+  isGroup         Boolean                   @default(false)
+  createdById     String
+
+  participants    ConversationParticipant[]
+  messages        Message[]
+
+  lastMessageAt   DateTime?
+  lastMessageText String?
+
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+
+  @@index([lastMessageAt])
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id              String       @id @default(uuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  lastReadAt      DateTime?    // last time user read this conversation
+  isMuted         Boolean      @default(false)
+  joinedAt        DateTime     @default(now())
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+  @@index([conversationId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id              String              @id @default(uuid())
+  conversationId  String
+  conversation    Conversation        @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId        String
+  sender          User                @relation(fields: [senderId], references: [id])
+
+  content         String?             // text content (null if attachment-only)
+  isSystem        Boolean             @default(false) // system messages (joined, left, etc.)
+
+  attachments     MessageAttachment[]
+
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  deletedAt       DateTime?
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+  @@map("messages")
+}
+
+model MessageAttachment {
+  id          String   @id @default(uuid())
+  messageId   String
+  message     Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  fileUrl     String
+  fileName    String
+  fileSize    Int?
+  mimeType    String?
+
+  createdAt   DateTime @default(now())
+
+  @@index([messageId])
+  @@map("message_attachments")
 }

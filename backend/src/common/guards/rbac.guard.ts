@@ -62,7 +62,9 @@ export type Permission =
   | 'admin:audit_logs'
   | 'admin:backup'
   | 'admin:license'
-  | 'admin:permissions';
+  | 'admin:permissions'
+  | 'messages:send'
+  | 'messages:read';
 
 // All available permissions for the catalog/matrix UI
 export const ALL_PERMISSIONS: Permission[] = [
@@ -80,6 +82,7 @@ export const ALL_PERMISSIONS: Permission[] = [
   'reports:read', 'reports:read_all', 'reports:export',
   'users:read', 'users:write', 'users:delete',
   'admin:settings', 'admin:audit_logs', 'admin:backup', 'admin:license', 'admin:permissions',
+  'messages:send', 'messages:read',
 ];
 
 // Permission categories for grouping in the UI
@@ -98,6 +101,7 @@ export const PERMISSION_CATEGORIES: Record<string, Permission[]> = {
   'Reports': ['reports:read', 'reports:read_all', 'reports:export'],
   'Users': ['users:read', 'users:write', 'users:delete'],
   'Admin': ['admin:settings', 'admin:audit_logs', 'admin:backup', 'admin:license', 'admin:permissions'],
+  'Messages': ['messages:send', 'messages:read'],
 };
 
 const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -115,6 +119,8 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'training:read',
     'announcements:read',
     'reports:read',
+    'messages:send',
+    'messages:read',
   ],
   TEAM_LEAD: [
     'employees:read',
@@ -143,6 +149,8 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'announcements:read',
     'reports:read',
     'reports:read_all',
+    'messages:send',
+    'messages:read',
   ],
   HR: [
     'employees:read',
@@ -181,6 +189,8 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'reports:read',
     'reports:read_all',
     'reports:export',
+    'messages:send',
+    'messages:read',
   ],
   PAYROLL_ADMIN: [
     'employees:read',
@@ -198,6 +208,8 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'reports:read_all',
     'reports:export',
     'announcements:read',
+    'messages:send',
+    'messages:read',
   ],
   ADMIN: [
     'employees:read',
@@ -243,6 +255,8 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'users:delete',
     'admin:settings',
     'admin:audit_logs',
+    'messages:send',
+    'messages:read',
   ],
   SUPER_ADMIN: [
     'employees:read',
@@ -293,6 +307,8 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'admin:backup',
     'admin:license',
     'admin:permissions',
+    'messages:send',
+    'messages:read',
   ],
 };
 
