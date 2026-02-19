@@ -3,23 +3,21 @@ import { Link, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import type { Employee, PaginatedResponse, UserRole } from '../types';
 import { ROLE_LABELS, JOB_POSITIONS } from '../types';
-import { Search, Plus, Filter, ChevronLeft, ChevronRight, MapPin, User, Trash2, X, Copy, Check } from 'lucide-react';
+import { Search, Plus, Filter, ChevronLeft, ChevronRight, MapPin, User, Trash2, X, Copy, Check, Mail, Shield } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
-
-function generatePassword(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-  const specials = '!@#$%&*';
-  let pass = '';
-  for (let i = 0; i < 12; i++) pass += chars[Math.floor(Math.random() * chars.length)];
-  pass += specials[Math.floor(Math.random() * specials.length)];
-  pass += Math.floor(Math.random() * 10);
-  return pass;
-}
 
 function generateEmail(first: string, last: string): string {
   const normalize = (s: string) => s.toLowerCase().replace(/[^a-z]/g, '');
   return `${normalize(first)}.${normalize(last)}@cinegrand.bg`;
+}
+
+interface OnboardingResult {
+  email: string;
+  password: string;
+  emailSent: boolean;
+  twoFactorRecommended: boolean;
+  employeeNumber: string;
 }
 
 export default function Employees() {
@@ -31,7 +29,7 @@ export default function Employees() {
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [showCreate, setShowCreate] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [createdCreds, setCreatedCreds] = useState<{ email: string; password: string } | null>(null);
+  const [createdResult, setCreatedResult] = useState<OnboardingResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [form, setForm] = useState({
     firstName: '', lastName: '', jobTitle: JOB_POSITIONS[JOB_POSITIONS.length - 1],
@@ -68,19 +66,27 @@ export default function Employees() {
     e.preventDefault();
     setCreating(true);
     const email = generateEmail(form.firstName, form.lastName);
-    const password = generatePassword();
     try {
-      await api.post('/users', {
-        email,
-        password,
-        role: form.role,
+      const { data } = await api.post('/employees', {
         firstName: form.firstName,
         lastName: form.lastName,
         jobTitle: form.jobTitle,
+        role: form.role,
+        email,
+        hireDate: new Date().toISOString(),
         phone: form.phone || undefined,
       });
-      setCreatedCreds({ email, password });
-      toast.success('Employee created successfully');
+
+      const onboarding = data.data?._onboarding;
+      setCreatedResult({
+        email,
+        password: onboarding?.tempPassword || '(check email)',
+        emailSent: onboarding?.emailSent || false,
+        twoFactorRecommended: onboarding?.twoFactorRecommended || false,
+        employeeNumber: data.data?.employeeNumber || '',
+      });
+
+      toast.success('Employee onboarded successfully!');
       fetchEmployees();
     } catch (err: any) {
       toast.error(err.response?.data?.error || 'Failed to create employee');
@@ -100,8 +106,8 @@ export default function Employees() {
   }
 
   function copyCredentials() {
-    if (!createdCreds) return;
-    navigator.clipboard.writeText(`Email: ${createdCreds.email}\nPassword: ${createdCreds.password}`);
+    if (!createdResult) return;
+    navigator.clipboard.writeText(`Email: ${createdResult.email}\nPassword: ${createdResult.password}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -121,8 +127,8 @@ export default function Employees() {
           <p className="text-gray-400 text-sm mt-1">{meta.total} employees</p>
         </div>
         {isSuperAdmin && (
-          <button onClick={() => { setShowCreate(true); setCreatedCreds(null); }} className="btn-primary">
-            <Plus className="w-4 h-4 mr-2" /> Add Employee
+          <button onClick={() => { setShowCreate(true); setCreatedResult(null); }} className="btn-primary">
+            <Plus className="w-4 h-4 mr-2" /> Onboard Employee
           </button>
         )}
       </div>
@@ -130,17 +136,43 @@ export default function Employees() {
       {/* Create Employee Modal */}
       {showCreate && (
         <div className="card p-6">
-          {createdCreds ? (
+          {createdResult ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">Employee Created!</h3>
-                <button onClick={() => { setShowCreate(false); setCreatedCreds(null); setForm({ firstName: '', lastName: '', jobTitle: JOB_POSITIONS[JOB_POSITIONS.length - 1], role: 'EMPLOYEE', phone: '' }); }} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
+                <h3 className="text-lg font-semibold text-white">Employee Onboarded!</h3>
+                <button onClick={() => { setShowCreate(false); setCreatedResult(null); setForm({ firstName: '', lastName: '', jobTitle: JOB_POSITIONS[JOB_POSITIONS.length - 1], role: 'EMPLOYEE', phone: '' }); }} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
               </div>
+
               <div className="bg-gray-800 p-4 rounded-lg space-y-2">
                 <p className="text-sm text-gray-400">Save these credentials - the password will not be shown again!</p>
-                <p className="text-sm"><span className="text-gray-400">Email:</span> <span className="text-primary-400 font-mono">{createdCreds.email}</span></p>
-                <p className="text-sm"><span className="text-gray-400">Password:</span> <span className="text-primary-400 font-mono">{createdCreds.password}</span></p>
+                {createdResult.employeeNumber && (
+                  <p className="text-sm"><span className="text-gray-400">Employee #:</span> <span className="text-white font-mono">{createdResult.employeeNumber}</span></p>
+                )}
+                <p className="text-sm"><span className="text-gray-400">Email:</span> <span className="text-primary-400 font-mono">{createdResult.email}</span></p>
+                <p className="text-sm"><span className="text-gray-400">Temp Password:</span> <span className="text-primary-400 font-mono">{createdResult.password}</span></p>
               </div>
+
+              {/* Onboarding status indicators */}
+              <div className="space-y-2">
+                <div className={`flex items-center gap-2 text-sm ${createdResult.emailSent ? 'text-green-400' : 'text-yellow-400'}`}>
+                  <Mail className="w-4 h-4" />
+                  {createdResult.emailSent
+                    ? 'Welcome email sent with login credentials'
+                    : 'Email not sent (SMTP disabled or no email). Share credentials manually.'
+                  }
+                </div>
+                <div className="flex items-center gap-2 text-sm text-blue-400">
+                  <Shield className="w-4 h-4" />
+                  Password change required on first login
+                </div>
+                {createdResult.twoFactorRecommended && (
+                  <div className="flex items-center gap-2 text-sm text-purple-400">
+                    <Shield className="w-4 h-4" />
+                    2FA setup will be prompted (leadership role)
+                  </div>
+                )}
+              </div>
+
               <button onClick={copyCredentials} className="btn-secondary">
                 {copied ? <><Check className="w-4 h-4 mr-1" /> Copied!</> : <><Copy className="w-4 h-4 mr-1" /> Copy Credentials</>}
               </button>
@@ -148,9 +180,14 @@ export default function Employees() {
           ) : (
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">New Employee</h3>
+                <h3 className="text-lg font-semibold text-white">Onboard New Employee</h3>
                 <button type="button" onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
               </div>
+
+              <div className="p-3 rounded-lg bg-blue-900/20 border border-blue-800/40 text-xs text-blue-300">
+                A temporary password will be auto-generated. The employee will receive a welcome email and must change their password on first login.
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-gray-300">First Name</label>
@@ -185,7 +222,7 @@ export default function Employees() {
                 <p className="text-xs text-gray-500">Email will be: <span className="text-primary-400">{generateEmail(form.firstName, form.lastName)}</span></p>
               )}
               <div className="flex gap-2">
-                <button type="submit" disabled={creating} className="btn-primary">{creating ? 'Creating...' : 'Create Employee'}</button>
+                <button type="submit" disabled={creating} className="btn-primary">{creating ? 'Onboarding...' : 'Onboard Employee'}</button>
                 <button type="button" onClick={() => setShowCreate(false)} className="btn-secondary">Cancel</button>
               </div>
             </form>

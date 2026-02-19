@@ -221,6 +221,9 @@ enum AuditAction {
   TASK_REJECTED
   SCORE_CALCULATED
   SCORE_RECALCULATED
+  ONBOARDING_STARTED
+  ONBOARDING_EMAIL_SENT
+  ONBOARDING_COMPLETED
 }
 
 // ============================================================
