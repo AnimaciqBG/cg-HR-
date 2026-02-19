@@ -22,6 +22,7 @@ import PhotoReview from './pages/PhotoReview';
 import Tasks from './pages/Tasks';
 import TaskReview from './pages/TaskReview';
 import Leaderboard from './pages/Leaderboard';
+import Messages from './pages/Messages';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, user } = useAuthStore();
@@ -85,6 +86,7 @@ export default function App() {
         <Route path="tasks" element={<Tasks />} />
         <Route path="task-review" element={<TaskReview />} />
         <Route path="leaderboard" element={<Leaderboard />} />
+        <Route path="messages" element={<Messages />} />
         <Route path="photo-review" element={<PhotoReview />} />
         <Route path="admin" element={<Admin />} />
       </Route>
