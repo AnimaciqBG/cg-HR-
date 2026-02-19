@@ -6,8 +6,10 @@ import {
   UserStatus,
   Prisma,
 } from '@prisma/client';
+import crypto from 'crypto';
 import prisma from '../../config/database';
 import { createAuditLog } from '../../common/utils/audit';
+import { hashPassword } from '../../common/utils/password';
 import { hasPermission, Permission } from '../../common/guards/rbac.guard';
 import {
   PaginationParams,
@@ -15,6 +17,7 @@ import {
   buildPaginatedResult,
 } from '../../common/utils/pagination';
 import { getLicenseStatus } from '../../common/utils/license';
+import { sendWelcomeEmail } from '../email/email.service';
 import logger from '../../config/logger';
 
 // ---------------------------------------------------------------------------
@@ -93,6 +96,26 @@ interface UpdateEmployeeData {
   salary?: number | null;
   hourlyRate?: number | null;
   currency?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Generate a secure temporary password
+// ---------------------------------------------------------------------------
+
+function generateTempPassword(): string {
+  // Format: Xx9!-Xx9!-Xx9! (16 chars, guaranteed to pass validation)
+  const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const lower = 'abcdefghjkmnpqrstuvwxyz';
+  const digits = '23456789';
+  const special = '!@#$%&*';
+
+  const pick = (chars: string) => chars[crypto.randomInt(chars.length)];
+
+  let pw = '';
+  for (let i = 0; i < 4; i++) {
+    pw += pick(upper) + pick(lower) + pick(digits) + pick(special);
+  }
+  return pw;
 }
 
 // Fields that are safe for every authenticated user to see about any employee
@@ -310,6 +333,13 @@ export class EmployeesService {
         ? data.email.toLowerCase()
         : `${employeeNumber.toLowerCase()}@placeholder.local`;
 
+      // Auto-generate a secure temporary password
+      const tempPassword = generateTempPassword();
+      const hashedPassword = await hashPassword(tempPassword);
+
+      const userRole = data.role ?? UserRole.EMPLOYEE;
+      const isLeadership = ['TEAM_LEAD', 'HR', 'ADMIN', 'PAYROLL_ADMIN', 'SUPER_ADMIN'].includes(userRole);
+
       const employee = await prisma.employee.create({
         data: {
           employeeNumber,
@@ -340,9 +370,9 @@ export class EmployeesService {
           user: {
             create: {
               email: userEmail,
-              passwordHash: '',
-              role: data.role ?? UserRole.EMPLOYEE,
-              status: UserStatus.PENDING_ACTIVATION,
+              passwordHash: hashedPassword,
+              role: userRole,
+              status: UserStatus.ACTIVE,
               mustChangePassword: true,
             },
           },
@@ -350,9 +380,10 @@ export class EmployeesService {
         select: DETAILED_EMPLOYEE_SELECT,
       });
 
+      // Audit: onboarding started
       await createAuditLog({
         actorId,
-        action: AuditAction.EMPLOYEE_CREATED,
+        action: AuditAction.ONBOARDING_STARTED,
         objectType: 'Employee',
         objectId: employee.id,
         after: {
@@ -362,12 +393,49 @@ export class EmployeesService {
           jobTitle: data.jobTitle,
           departmentId: data.departmentId,
           locationId: data.locationId,
+          email: userEmail,
+          role: userRole,
         },
         ipAddress,
         userAgent,
       });
 
-      return { success: true, employee: employee as unknown as Record<string, unknown> };
+      // Send welcome email with credentials (non-blocking)
+      const hasRealEmail = data.email && !userEmail.endsWith('@placeholder.local');
+      if (hasRealEmail) {
+        sendWelcomeEmail({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: userEmail,
+          tempPassword,
+          jobTitle: data.jobTitle,
+          employeeNumber,
+          requiresTwoFactor: isLeadership,
+        }).then(async (sent) => {
+          if (sent) {
+            await createAuditLog({
+              actorId,
+              action: AuditAction.ONBOARDING_EMAIL_SENT,
+              objectType: 'Employee',
+              objectId: employee.id,
+              after: { email: userEmail },
+              ipAddress,
+              userAgent,
+            });
+          }
+        }).catch(() => { /* already logged inside sendWelcomeEmail */ });
+      }
+
+      // Return the generated credentials so the admin can see them
+      const result = employee as unknown as Record<string, unknown>;
+      result._onboarding = {
+        tempPassword,
+        emailSent: !!hasRealEmail,
+        requiresPasswordChange: true,
+        twoFactorRecommended: isLeadership,
+      };
+
+      return { success: true, employee: result };
     } catch (error) {
       logger.error('Failed to create employee', { error });
 

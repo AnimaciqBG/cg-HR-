@@ -64,6 +64,9 @@ export class AuthService {
     }
 
     // Check status
+    if (user.status === UserStatus.PENDING_ACTIVATION) {
+      return { success: false, error: 'Account is pending activation. Contact your administrator.' };
+    }
     if (user.status !== UserStatus.ACTIVE) {
       return { success: false, error: 'Account is not active' };
     }

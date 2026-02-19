@@ -26,7 +26,15 @@ export default function Login() {
         setShow2FA(true);
         setTempToken(result.tempToken || '');
       } else {
-        navigate('/');
+        // Fetch user data to check mustChangePassword
+        const { fetchUser } = useAuthStore.getState();
+        await fetchUser();
+        const currentUser = useAuthStore.getState().user;
+        if (currentUser?.mustChangePassword) {
+          navigate('/change-password');
+        } else {
+          navigate('/');
+        }
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
@@ -42,7 +50,14 @@ export default function Login() {
 
     try {
       await verify2FA(tempToken, totpCode);
-      navigate('/');
+      const { fetchUser } = useAuthStore.getState();
+      await fetchUser();
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser?.mustChangePassword) {
+        navigate('/change-password');
+      } else {
+        navigate('/');
+      }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Invalid 2FA code');
     } finally {
