@@ -508,7 +508,7 @@ export default function Messages() {
 
                         <div>
                           {/* Sender name */}
-                          {showAvatar && !isMe && activeConvo.isGroup && (
+                          {showAvatar && !isMe && (
                             <p className="text-xs text-gray-500 mb-0.5 ml-1">{senderName}</p>
                           )}
 
@@ -547,16 +547,14 @@ export default function Messages() {
                           </div>
 
                           {/* Time + seen */}
-                          {showTime && (
-                            <div className={`flex items-center gap-1 mt-0.5 ${isMe ? 'justify-end mr-1' : 'ml-1'}`}>
-                              <span className="text-[10px] text-gray-600">
-                                {new Date(msg.createdAt).toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' })}
-                              </span>
-                              {isMe && (
-                                <CheckCheck className="w-3 h-3 text-primary-400" />
-                              )}
-                            </div>
-                          )}
+                          <div className={`flex items-center gap-1 mt-0.5 ${isMe ? 'justify-end mr-1' : 'ml-1'}`}>
+                            <span className="text-[10px] text-gray-600">
+                              {new Date(msg.createdAt).toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            {isMe && (
+                              <CheckCheck className="w-3 h-3 text-primary-400" />
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
