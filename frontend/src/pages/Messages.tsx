@@ -4,7 +4,7 @@ import api from '../services/api';
 import { useAuthStore } from '../store/authStore';
 import {
   MessageSquare, Search, Send, Paperclip, User, Check, CheckCheck,
-  Plus, ArrowLeft, X, Loader2, Image, FileText, Download, BellOff, Bell,
+  Plus, ArrowLeft, X, Loader2, Image, FileText, Download, BellOff, Bell, AlertCircle,
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -136,11 +136,16 @@ export default function Messages() {
   // -----------------------------------------------------------------------
   // Fetch conversations
   // -----------------------------------------------------------------------
+  const [convoError, setConvoError] = useState('');
+
   const fetchConversations = useCallback(async () => {
     try {
       const { data } = await api.get('/messages/conversations');
       setConversations(data.data);
-    } catch { /* ignore */ }
+      setConvoError('');
+    } catch {
+      setConvoError('Failed to load conversations');
+    }
     setLoadingConvos(false);
   }, []);
 
@@ -194,11 +199,14 @@ export default function Messages() {
   // -----------------------------------------------------------------------
   // Send message
   // -----------------------------------------------------------------------
+  const [sendError, setSendError] = useState('');
+
   async function handleSend(e?: React.FormEvent) {
     e?.preventDefault();
     if ((!msgText.trim() && attachments.length === 0) || !activeConvoId || sending) return;
 
     setSending(true);
+    setSendError('');
     try {
       const formData = new FormData();
       if (msgText.trim()) formData.append('content', msgText.trim());
@@ -212,7 +220,9 @@ export default function Messages() {
       setAttachments([]);
       await fetchMessages(activeConvoId);
       fetchConversations();
-    } catch { /* ignore */ }
+    } catch {
+      setSendError('Failed to send message. Please try again.');
+    }
     setSending(false);
   }
 
@@ -232,13 +242,18 @@ export default function Messages() {
     return () => clearTimeout(timer);
   }, [dirSearch, showNewChat]);
 
+  const [chatError, setChatError] = useState('');
+
   async function startChat(targetUserId: string) {
+    setChatError('');
     try {
       const { data } = await api.post('/messages/conversations', { participantIds: [targetUserId] });
       selectConvo(data.data.id);
       setShowNewChat(false);
       fetchConversations();
-    } catch { /* ignore */ }
+    } catch {
+      setChatError('Failed to start conversation. Please try again.');
+    }
   }
 
   // -----------------------------------------------------------------------
@@ -313,6 +328,11 @@ export default function Messages() {
           {loadingConvos ? (
             <div className="flex justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-gray-500" />
+            </div>
+          ) : convoError && conversations.length === 0 ? (
+            <div className="text-center py-12 px-4">
+              <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-3" />
+              <p className="text-sm text-red-400">{convoError}</p>
             </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-12 px-4">
@@ -392,6 +412,9 @@ export default function Messages() {
               </div>
             </div>
             <div className="flex-1 overflow-y-auto px-4">
+              {chatError && (
+                <div className="mb-3 p-2 rounded-lg bg-red-900/30 text-red-400 text-sm">{chatError}</div>
+              )}
               {loadingDir ? (
                 <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-gray-500" /></div>
               ) : (
@@ -555,6 +578,15 @@ export default function Messages() {
                     </button>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Send error */}
+            {sendError && (
+              <div className="px-4 py-1.5">
+                <p className="text-xs text-red-400 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" /> {sendError}
+                </p>
               </div>
             )}
 

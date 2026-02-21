@@ -333,6 +333,40 @@ router.put('/:id', async (req: AuthenticatedRequest, res: Response) => {
 });
 
 // ---------------------------------------------------------------------------
+// DELETE /api/employees/:id
+// Soft-delete an employee and suspend their user account.
+// Restricted to ADMIN and SUPER_ADMIN.
+// ---------------------------------------------------------------------------
+router.delete(
+  '/:id',
+  requirePermission('employees:delete'),
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: 'Authentication required' });
+        return;
+      }
+
+      const result = await employeesService.softDeleteEmployee(
+        req.params.id,
+        req.user.id,
+        getClientIp(req),
+        getUserAgent(req)
+      );
+
+      if (!result.success) {
+        res.status(404).json({ error: result.error });
+        return;
+      }
+
+      res.json({ message: 'Employee deleted' });
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+);
+
+// ---------------------------------------------------------------------------
 // GET /api/employees/:id/timeline
 // Returns the audit history for a given employee.
 // RBAC enforced in the service layer.

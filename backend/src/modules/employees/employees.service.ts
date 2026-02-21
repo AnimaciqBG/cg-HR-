@@ -451,6 +451,56 @@ export class EmployeesService {
   }
 
   // -----------------------------------------------------------------------
+  // SOFT DELETE
+  // -----------------------------------------------------------------------
+
+  async softDeleteEmployee(
+    employeeId: string,
+    actorId: string,
+    ipAddress: string,
+    userAgent: string
+  ): Promise<{ success: boolean; error?: string }> {
+    const employee = await prisma.employee.findFirst({
+      where: { id: employeeId, deletedAt: null },
+      include: { user: { select: { id: true, email: true } } },
+    });
+
+    if (!employee) {
+      return { success: false, error: 'Employee not found' };
+    }
+
+    const now = new Date();
+
+    await prisma.$transaction([
+      prisma.employee.update({
+        where: { id: employeeId },
+        data: { deletedAt: now, deletedBy: actorId, employmentStatus: EmploymentStatus.TERMINATED, terminationDate: now },
+      }),
+      prisma.user.update({
+        where: { id: employee.userId },
+        data: { deletedAt: now, deletedBy: actorId, status: UserStatus.SUSPENDED },
+      }),
+    ]);
+
+    await createAuditLog({
+      actorId,
+      action: AuditAction.EMPLOYEE_DELETED,
+      objectType: 'Employee',
+      objectId: employeeId,
+      before: {
+        employeeNumber: employee.employeeNumber,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.user.email,
+      },
+      ipAddress,
+      userAgent,
+    });
+
+    return { success: true };
+  }
+
+  // -----------------------------------------------------------------------
   // UPDATE
   // -----------------------------------------------------------------------
 

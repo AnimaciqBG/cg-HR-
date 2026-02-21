@@ -53,8 +53,12 @@ export default function ChangePassword() {
       await api.post('/auth/change-password', { currentPassword, newPassword });
       await fetchUser();
 
+      // Read fresh state after fetchUser completes
+      const freshUser = useAuthStore.getState().user;
+      const freshIsLeadership = freshUser?.role && LEADERSHIP_ROLES.includes(freshUser.role);
+
       // If leadership role, show 2FA prompt
-      if (isLeadership && !user?.twoFactorEnabled) {
+      if (freshIsLeadership && !freshUser?.twoFactorEnabled) {
         setShow2FAPrompt(true);
       } else {
         navigate('/');

@@ -181,6 +181,7 @@ enum AuditAction {
   USER_ROLE_CHANGED
   EMPLOYEE_CREATED
   EMPLOYEE_UPDATED
+  EMPLOYEE_DELETED
   SALARY_VIEWED
   DOCUMENT_UPLOADED
   DOCUMENT_DOWNLOADED
@@ -259,6 +260,7 @@ model User {
   permissionOverrides UserPermission[]
   conversationParticipants ConversationParticipant[]
   sentMessages        Message[]
+  createdConversations Conversation[] @relation("ConversationCreator")
 
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
@@ -1211,6 +1213,7 @@ model Conversation {
   title           String?                   // null for 1-on-1, set for group chats
   isGroup         Boolean                   @default(false)
   createdById     String
+  createdBy       User                      @relation("ConversationCreator", fields: [createdById], references: [id])
 
   participants    ConversationParticipant[]
   messages        Message[]
