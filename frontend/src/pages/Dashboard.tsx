@@ -38,10 +38,10 @@ export default function Dashboard() {
   }
 
   const stats = [
-    { label: 'Total Employees', value: data?.totalEmployees || 0, icon: Users, color: 'text-primary-400 bg-primary-900/40', link: '/employees' },
-    { label: 'On Leave Today', value: data?.activeLeaves || 0, icon: CalendarDays, color: 'text-orange-400 bg-orange-900/40', link: '/leaves' },
-    { label: 'Pending Approvals', value: data?.pendingApprovals || 0, icon: CheckSquare, color: 'text-purple-400 bg-purple-900/40', link: '/leaves' },
-    { label: 'Breaks Today', value: data?.todayBreaks || 0, icon: Coffee, color: 'text-green-400 bg-green-900/40', link: '/breaks' },
+    { label: 'Total Employees', value: data?.totalEmployees || 0, icon: Users, gradient: 'linear-gradient(135deg, rgba(217, 176, 97, 0.12), rgba(138, 109, 59, 0.06))', link: '/employees' },
+    { label: 'On Leave Today', value: data?.activeLeaves || 0, icon: CalendarDays, gradient: 'linear-gradient(135deg, rgba(251, 146, 60, 0.12), rgba(194, 65, 12, 0.06))', link: '/leaves' },
+    { label: 'Pending Approvals', value: data?.pendingApprovals || 0, icon: CheckSquare, gradient: 'linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(107, 33, 168, 0.06))', link: '/leaves' },
+    { label: 'Breaks Today', value: data?.todayBreaks || 0, icon: Coffee, gradient: 'linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(22, 101, 52, 0.06))', link: '/breaks' },
   ];
 
   const greeting = () => {
@@ -52,80 +52,87 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       {/* Welcome */}
       <div>
-        <h1 className="text-2xl font-bold text-white">
-          {greeting()}, {user?.employee?.firstName || 'User'}!
+        <h1 className="text-3xl font-bold italic text-gradient-gold">
+          {greeting()}, {user?.employee?.firstName || 'User'}
         </h1>
-        <p className="text-gray-400 mt-1">
-          Cinegrand HR Platform - Here's what's happening today
+        <p className="text-quantum-zinc mt-2 text-sm tracking-wider uppercase">
+          Here's what's happening today
         </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <Link key={stat.label} to={stat.link} className="card p-5 hover:border-primary-700/50 transition-colors">
+      {/* Bento Stats Grid — Asymmetric */}
+      <div className="grid grid-cols-12 gap-5">
+        {stats.map((stat, i) => (
+          <Link
+            key={stat.label}
+            to={stat.link}
+            className={`card p-7 micro-scale hover-glow ${i === 0 ? 'col-span-12 sm:col-span-7' : 'col-span-12 sm:col-span-5'} ${i === 2 ? 'sm:col-span-5' : i === 3 ? 'sm:col-span-7' : ''}`}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">{stat.label}</p>
-                <p className="text-3xl font-bold text-white mt-1">{stat.value}</p>
+                <p className="label-luxury mb-2">{stat.label}</p>
+                <p className="text-4xl font-bold text-white tracking-tight">{stat.value}</p>
               </div>
-              <div className={`p-3 rounded-xl ${stat.color}`}>
-                <stat.icon className="w-6 h-6" />
+              <div className="p-4 rounded-2xl" style={{ background: stat.gradient }}>
+                <stat.icon className="w-7 h-7 text-primary-400" />
               </div>
             </div>
           </Link>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Actions */}
-        <div className="card p-5">
-          <h2 className="text-lg font-semibold mb-4 text-white">Quick Actions</h2>
+      {/* Bento Bottom Grid — Asymmetric (Quick Actions 5/12, Announcements 7/12) */}
+      <div className="grid grid-cols-12 gap-5">
+        {/* Quick Actions — Satellite card */}
+        <div className="col-span-12 lg:col-span-5 card p-7">
+          <h2 className="text-lg font-semibold text-white tracking-wide mb-5">Quick Actions</h2>
+          <div className="gold-line mb-5" />
           <div className="space-y-2">
-            <Link to="/time" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
-              <Clock className="w-5 h-5 text-primary-500" />
-              <span className="text-sm font-medium text-gray-300">Clock In / Out</span>
-              <ArrowRight className="w-4 h-4 ml-auto text-gray-600" />
-            </Link>
-            <Link to="/breaks" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
-              <Coffee className="w-5 h-5 text-green-500" />
-              <span className="text-sm font-medium text-gray-300">Start Break</span>
-              <ArrowRight className="w-4 h-4 ml-auto text-gray-600" />
-            </Link>
-            <Link to="/leaves" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
-              <CalendarDays className="w-5 h-5 text-orange-500" />
-              <span className="text-sm font-medium text-gray-300">Request Leave</span>
-              <ArrowRight className="w-4 h-4 ml-auto text-gray-600" />
-            </Link>
-            <Link to="/goals" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
-              <TrendingUp className="w-5 h-5 text-purple-500" />
-              <span className="text-sm font-medium text-gray-300">My Goals</span>
-              <ArrowRight className="w-4 h-4 ml-auto text-gray-600" />
-            </Link>
+            {[
+              { to: '/time', icon: Clock, label: 'Clock In / Out', color: 'text-primary-400' },
+              { to: '/breaks', icon: Coffee, label: 'Start Break', color: 'text-green-400' },
+              { to: '/leaves', icon: CalendarDays, label: 'Request Leave', color: 'text-orange-400' },
+              { to: '/goals', icon: TrendingUp, label: 'My Goals', color: 'text-purple-400' },
+            ].map((action) => (
+              <Link
+                key={action.to}
+                to={action.to}
+                className="flex items-center gap-4 p-4 rounded-2xl hover:bg-white/[0.03] transition-all duration-300 group"
+              >
+                <action.icon className={`w-5 h-5 ${action.color}`} />
+                <span className="text-sm font-medium text-gray-300 tracking-wide">{action.label}</span>
+                <ArrowRight className="w-4 h-4 ml-auto text-quantum-zinc group-hover:text-primary-400 group-hover:translate-x-1 transition-all duration-300" />
+              </Link>
+            ))}
           </div>
         </div>
 
-        {/* Announcements */}
-        <div className="card p-5 lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">Announcements</h2>
-            <Link to="/announcements" className="text-sm text-primary-400 hover:underline">View all</Link>
+        {/* Announcements — Hero card */}
+        <div className="col-span-12 lg:col-span-7 card p-7">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-lg font-semibold text-white tracking-wide">Announcements</h2>
+            <Link to="/announcements" className="text-sm text-primary-400 hover:text-primary-300 transition-colors tracking-wide">View all</Link>
           </div>
+          <div className="gold-line mb-5" />
           <div className="space-y-3">
             {announcements.length === 0 ? (
-              <p className="text-sm text-gray-500 py-4 text-center">No announcements</p>
+              <p className="text-sm text-quantum-zinc py-8 text-center tracking-wide">No announcements</p>
             ) : (
               announcements.map((ann) => (
-                <div key={ann.id} className={`p-3 rounded-lg border ${ann.isPinned ? 'border-primary-800/50 bg-primary-900/20' : 'border-gray-800'}`}>
-                  <div className="flex items-start gap-2">
-                    <Megaphone className={`w-4 h-4 mt-0.5 flex-shrink-0 ${ann.priority === 'high' || ann.priority === 'urgent' ? 'text-red-400' : 'text-gray-500'}`} />
-                    <div>
-                      <p className="font-medium text-sm text-white">{ann.title}</p>
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">{ann.content}</p>
-                      <p className="text-xs text-gray-600 mt-1">
+                <div
+                  key={ann.id}
+                  className={`p-5 rounded-2xl transition-all duration-300 hover:bg-white/[0.02] ${ann.isPinned ? 'bg-primary-500/[0.04]' : ''}`}
+                  style={{ border: ann.isPinned ? '1px solid rgba(217, 176, 97, 0.1)' : '1px solid rgba(217, 176, 97, 0.03)' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Megaphone className={`w-4 h-4 mt-0.5 flex-shrink-0 ${ann.priority === 'high' || ann.priority === 'urgent' ? 'text-red-400' : 'text-quantum-zinc'}`} />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-sm text-white tracking-wide">{ann.title}</p>
+                      <p className="text-xs text-quantum-zinc mt-1.5 line-clamp-2">{ann.content}</p>
+                      <p className="text-xs text-quantum-zinc/50 mt-2 tracking-wider">
                         {new Date(ann.publishedAt).toLocaleDateString('bg-BG')}
                       </p>
                     </div>

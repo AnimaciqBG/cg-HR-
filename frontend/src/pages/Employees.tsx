@@ -123,8 +123,8 @@ export default function Employees() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Employees</h1>
-          <p className="text-gray-400 text-sm mt-1">{meta.total} employees</p>
+          <h1 className="text-2xl font-bold italic text-gradient-gold">Employees</h1>
+          <p className="text-quantum-zinc text-sm mt-1 tracking-wide">{meta.total} employees</p>
         </div>
         {isSuperAdmin && (
           <button onClick={() => { setShowCreate(true); setCreatedResult(null); }} className="btn-primary">
@@ -143,8 +143,8 @@ export default function Employees() {
                 <button onClick={() => { setShowCreate(false); setCreatedResult(null); setForm({ firstName: '', lastName: '', jobTitle: JOB_POSITIONS[JOB_POSITIONS.length - 1], role: 'EMPLOYEE', phone: '' }); }} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
               </div>
 
-              <div className="bg-gray-800 p-4 rounded-lg space-y-2">
-                <p className="text-sm text-gray-400">Save these credentials - the password will not be shown again!</p>
+              <div className="p-4 rounded-2xl space-y-2" style={{ background: 'rgba(217, 176, 97, 0.04)', border: '1px solid rgba(217, 176, 97, 0.08)' }}>
+                <p className="text-sm text-quantum-zinc tracking-wide">Save these credentials - the password will not be shown again!</p>
                 {createdResult.employeeNumber && (
                   <p className="text-sm"><span className="text-gray-400">Employee #:</span> <span className="text-white font-mono">{createdResult.employeeNumber}</span></p>
                 )}
@@ -184,29 +184,29 @@ export default function Employees() {
                 <button type="button" onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
               </div>
 
-              <div className="p-3 rounded-lg bg-blue-900/20 border border-blue-800/40 text-xs text-blue-300">
+              <div className="p-4 rounded-2xl text-xs" style={{ background: 'rgba(217, 176, 97, 0.04)', border: '1px solid rgba(217, 176, 97, 0.1)', color: '#D9B061' }}>
                 A temporary password will be auto-generated. The employee will receive a welcome email and must change their password on first login.
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-300">First Name</label>
+                  <label className="label-luxury">First Name</label>
                   <input value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} className="input-field mt-1" required />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-300">Last Name</label>
+                  <label className="label-luxury">Last Name</label>
                   <input value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} className="input-field mt-1" required />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-300">Position</label>
+                  <label className="label-luxury">Position</label>
                   <select value={form.jobTitle} onChange={(e) => setForm({ ...form, jobTitle: e.target.value })} className="input-field mt-1">
                     {JOB_POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-300">Role</label>
+                  <label className="label-luxury">Role</label>
                   <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as UserRole })} className="input-field mt-1">
                     {Object.entries(ROLE_LABELS).map(([key, label]) => (
                       <option key={key} value={key}>{label}</option>
@@ -215,7 +215,7 @@ export default function Employees() {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">Phone (optional)</label>
+                <label className="label-luxury">Phone (optional)</label>
                 <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input-field mt-1" />
               </div>
               {form.firstName && form.lastName && (
@@ -234,7 +234,7 @@ export default function Employees() {
       <div className="card p-4">
         <form onSubmit={handleSearch} className="flex gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-quantum-zinc" />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, title, number..." className="input-field pl-10" />
           </div>
           <button type="submit" className="btn-primary">
@@ -251,18 +251,18 @@ export default function Employees() {
           {employees.map((emp) => (
             <div key={emp.id} className="card p-4 hover:border-primary-700/50 transition-colors">
               <Link to={`/employees/${emp.id}`} className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary-900/40 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-primary-500/10 flex items-center justify-center flex-shrink-0">
                   {emp.photoUrl ? (
-                    <img src={emp.photoUrl} alt="" className="w-12 h-12 rounded-full object-cover" />
+                    <img src={emp.photoUrl} alt="" className="w-12 h-12 rounded-2xl object-cover" />
                   ) : (
                     <User className="w-6 h-6 text-primary-400" />
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-sm text-white truncate">{emp.firstName} {emp.lastName}</p>
-                  <p className="text-xs text-gray-400 truncate">{emp.jobTitle}</p>
+                  <p className="text-xs text-quantum-zinc truncate">{emp.jobTitle}</p>
                   {emp.location && (
-                    <span className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                    <span className="flex items-center gap-1 text-xs text-quantum-zinc/60 mt-1">
                       <MapPin className="w-3 h-3" /> {emp.location.name}
                     </span>
                   )}
@@ -287,7 +287,7 @@ export default function Employees() {
           <button onClick={() => changePage(meta.page - 1)} disabled={meta.page <= 1} className="btn-secondary p-2">
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <span className="text-sm text-gray-400">Page {meta.page} of {meta.totalPages}</span>
+          <span className="text-sm text-quantum-zinc tracking-wide">Page {meta.page} of {meta.totalPages}</span>
           <button onClick={() => changePage(meta.page + 1)} disabled={meta.page >= meta.totalPages} className="btn-secondary p-2">
             <ChevronRight className="w-4 h-4" />
           </button>

@@ -38,7 +38,7 @@ export default function Reports() {
       <div className="flex flex-col items-center justify-center h-64 text-gray-500">
         <Lock className="w-12 h-12 mb-3 text-gray-600" />
         <p className="text-lg font-medium text-white">Access Restricted</p>
-        <p className="text-sm text-gray-400">Reports are only available to administrators and management.</p>
+        <p className="text-sm text-quantum-zinc">Reports are only available to administrators and management.</p>
       </div>
     );
   }
@@ -59,7 +59,7 @@ export default function Reports() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Analytics & Reports</h1>
+        <h1 className="text-2xl font-bold italic text-gradient-gold">Analytics & Reports</h1>
         <button onClick={() => exportReport(activeReport)} className="btn-secondary">
           <Download className="w-4 h-4 mr-1" /> Export CSV
         </button>
@@ -69,7 +69,7 @@ export default function Reports() {
       <div className="flex gap-2 flex-wrap">
         {reports.map(r => (
           <button key={r.key} onClick={() => setActiveReport(r.key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeReport === r.key ? 'bg-primary-900/40 text-primary-400' : 'bg-gray-800 text-gray-400'}`}>
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeReport === r.key ? 'bg-primary-500/10 text-primary-400' : 'bg-white/[0.03] text-quantum-zinc'}`}>
             <r.icon className="w-4 h-4" /> {r.label}
           </button>
         ))}
@@ -81,14 +81,14 @@ export default function Reports() {
         <div className="space-y-6">
           {/* Total */}
           <div className="card p-6 text-center">
-            <p className="text-sm text-gray-400">Total Active Employees</p>
+            <p className="text-sm text-quantum-zinc tracking-wide">Total Active Employees</p>
             <p className="text-5xl font-bold mt-2 text-white">{headcount.total}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* By Location */}
             <div className="card p-6">
-              <h3 className="font-semibold mb-4 text-white">By Location</h3>
+              <h3 className="font-semibold mb-4 tracking-wide text-white">By Location</h3>
               <div className="space-y-3">
                 {headcount.byLocation.map((l) => (
                   <div key={l.name}>
@@ -96,7 +96,7 @@ export default function Reports() {
                       <span className="text-gray-300">{l.name}</span>
                       <span className="font-medium text-white">{l.count}</span>
                     </div>
-                    <div className="w-full bg-gray-800 rounded-full h-2">
+                    <div className="w-full bg-white/[0.03] rounded-full h-2">
                       <div className="bg-primary-500 h-2 rounded-full" style={{ width: `${(l.count / headcount.total) * 100}%` }}></div>
                     </div>
                   </div>
@@ -106,10 +106,10 @@ export default function Reports() {
 
             {/* By Status */}
             <div className="card p-6">
-              <h3 className="font-semibold mb-4 text-white">By Status</h3>
+              <h3 className="font-semibold mb-4 tracking-wide text-white">By Status</h3>
               <div className="space-y-2">
                 {headcount.byStatus.map((s) => (
-                  <div key={s.status} className="flex items-center justify-between p-2 rounded-lg bg-gray-800/50">
+                  <div key={s.status} className="flex items-center justify-between p-2 rounded-2xl bg-white/[0.03]">
                     <span className="text-sm text-gray-300">{s.status}</span>
                     <span className="font-bold text-white">{s.count}</span>
                   </div>
@@ -119,12 +119,12 @@ export default function Reports() {
 
             {/* By Contract */}
             <div className="card p-6 md:col-span-2">
-              <h3 className="font-semibold mb-4 text-white">By Contract Type</h3>
+              <h3 className="font-semibold mb-4 tracking-wide text-white">By Contract Type</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {headcount.byContractType.map((c) => (
-                  <div key={c.contractType} className="text-center p-4 rounded-lg bg-gray-800/50">
+                  <div key={c.contractType} className="text-center p-4 rounded-2xl bg-white/[0.03]">
                     <p className="text-2xl font-bold text-primary-400">{c.count}</p>
-                    <p className="text-xs text-gray-400 mt-1">{c.contractType}</p>
+                    <p className="text-xs text-quantum-zinc mt-1">{c.contractType}</p>
                   </div>
                 ))}
               </div>
@@ -132,7 +132,7 @@ export default function Reports() {
           </div>
         </div>
       ) : (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-quantum-zinc">
           <BarChart3 className="w-12 h-12 mx-auto mb-3 text-gray-600" />
           <p>No report data available</p>
         </div>

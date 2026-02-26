@@ -188,7 +188,7 @@ export default function EmployeeProfile() {
         <Link to="/employees" className="p-2 rounded-lg hover:bg-gray-700 text-gray-300">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-white">Employee Profile</h1>
+        <h1 className="text-2xl font-bold italic text-gradient-gold">Employee Profile</h1>
       </div>
 
       {/* Header Card */}
@@ -196,7 +196,7 @@ export default function EmployeeProfile() {
         <div className="flex items-start gap-6">
           {/* Photo + Upload */}
           <div className="relative group">
-            <div className="w-24 h-24 rounded-2xl bg-primary-900/40 flex items-center justify-center flex-shrink-0 overflow-hidden">
+            <div className="w-24 h-24 rounded-2xl bg-primary-500/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
               {employee.photoUrl ? (
                 <img src={employee.photoUrl} alt="" className="w-24 h-24 rounded-2xl object-cover" />
               ) : (
@@ -245,9 +245,9 @@ export default function EmployeeProfile() {
                 </button>
               )}
             </div>
-            <p className="text-gray-400">{employee.jobTitle}</p>
-            <p className="text-xs text-gray-500 mt-1">#{employee.employeeNumber}</p>
-            <div className="flex items-center gap-4 mt-3 text-sm text-gray-400">
+            <p className="text-quantum-zinc">{employee.jobTitle}</p>
+            <p className="text-xs text-quantum-zinc mt-1">#{employee.employeeNumber}</p>
+            <div className="flex items-center gap-4 mt-3 text-sm text-quantum-zinc">
               {employee.department && (
                 <span className="flex items-center gap-1"><Building2 className="w-4 h-4" /> {employee.department.name}</span>
               )}
@@ -286,16 +286,16 @@ export default function EmployeeProfile() {
       {/* Photo History Panel */}
       {showPhotoHistory && (
         <div className="card p-6">
-          <h3 className="font-semibold mb-4 text-white flex items-center gap-2">
+          <h3 className="font-semibold mb-4 tracking-wide text-white flex items-center gap-2">
             <Camera className="w-5 h-5 text-primary-400" /> Photo History
           </h3>
           {photoHistory.length === 0 ? (
-            <p className="text-gray-500 text-sm">No photos uploaded yet</p>
+            <p className="text-quantum-zinc text-sm">No photos uploaded yet</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {photoHistory.map((photo) => (
                 <div key={photo.id} className="relative group">
-                  <div className="aspect-square rounded-xl overflow-hidden bg-gray-800 border border-gray-700">
+                  <div className="aspect-square rounded-xl overflow-hidden bg-white/[0.03] border" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
                     <img src={photo.fileUrl} alt="" className="w-full h-full object-cover" />
                   </div>
                   <div className={`absolute top-1 right-1 px-1.5 py-0.5 rounded text-xs font-medium ${
@@ -340,7 +340,7 @@ export default function EmployeeProfile() {
       {showScoreDetails && liveScore && (
         <div className="card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-white flex items-center gap-2">
+            <h3 className="font-semibold tracking-wide text-white flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-primary-400" /> Performance Score
             </h3>
             <div className="flex items-center gap-2">
@@ -359,7 +359,7 @@ export default function EmployeeProfile() {
                 <span className="text-2xl font-bold">{liveScore.grade}</span>
               </div>
               <p className="text-2xl font-bold text-white mt-1">{Math.round(liveScore.totalScore)}</p>
-              <p className="text-xs text-gray-500">Overall</p>
+              <p className="text-xs text-quantum-zinc">Overall</p>
             </div>
             {/* Breakdown bars */}
             {([
@@ -370,7 +370,7 @@ export default function EmployeeProfile() {
             ] as [string, number, number, string][]).map(([label, value, max, color]) => (
               <div key={label}>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-gray-400">{label}</span>
+                  <span className="text-quantum-zinc">{label}</span>
                   <span className="text-gray-300">{Math.round(value)}/{max}</span>
                 </div>
                 <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
@@ -381,7 +381,7 @@ export default function EmployeeProfile() {
           </div>
 
           {/* Raw metrics */}
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-3 pt-3 border-t border-gray-800">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3 pt-3 border-t" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
             {([
               ['Tasks', liveScore.totalTasks],
               ['Approved', liveScore.approvedTasks],
@@ -392,15 +392,15 @@ export default function EmployeeProfile() {
             ] as [string, string | number][]).map(([label, value]) => (
               <div key={label} className="text-center">
                 <p className="text-sm font-semibold text-white">{value}</p>
-                <p className="text-xs text-gray-500">{label}</p>
+                <p className="text-xs text-quantum-zinc">{label}</p>
               </div>
             ))}
           </div>
 
           {/* Score History */}
           {scoreHistory.length > 1 && (
-            <div className="mt-4 pt-3 border-t border-gray-800">
-              <p className="text-xs text-gray-500 mb-2">Score History</p>
+            <div className="mt-4 pt-3 border-t" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
+              <p className="text-xs text-quantum-zinc mb-2">Score History</p>
               <div className="flex items-end gap-1 h-16">
                 {scoreHistory.slice(0, 12).reverse().map((s, i) => (
                   <div key={s.id} className="flex-1 flex flex-col items-center gap-0.5" title={`${Math.round(s.totalScore)} (${s.grade}) - ${new Date(s.calculatedAt).toLocaleDateString('bg-BG')}`}>
@@ -426,27 +426,27 @@ export default function EmployeeProfile() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Contact Info */}
         <div className="card p-6">
-          <h3 className="font-semibold mb-4 text-white">Contact Information</h3>
+          <h3 className="font-semibold mb-4 tracking-wide text-white">Contact Information</h3>
           {editing ? (
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-400">Phone</label>
+                <label className="label-luxury">Phone</label>
                 <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input-field" />
               </div>
               <div>
-                <label className="text-xs text-gray-400">Personal Email</label>
+                <label className="label-luxury">Personal Email</label>
                 <input value={form.personalEmail} onChange={(e) => setForm({ ...form, personalEmail: e.target.value })} className="input-field" />
               </div>
               <div>
-                <label className="text-xs text-gray-400">Address</label>
+                <label className="label-luxury">Address</label>
                 <input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="input-field" />
               </div>
               <div>
-                <label className="text-xs text-gray-400">Emergency Contact</label>
+                <label className="label-luxury">Emergency Contact</label>
                 <input value={form.emergencyContact} onChange={(e) => setForm({ ...form, emergencyContact: e.target.value })} className="input-field" />
               </div>
               <div>
-                <label className="text-xs text-gray-400">Emergency Phone</label>
+                <label className="label-luxury">Emergency Phone</label>
                 <input value={form.emergencyPhone} onChange={(e) => setForm({ ...form, emergencyPhone: e.target.value })} className="input-field" />
               </div>
               <div className="flex gap-2">
@@ -457,16 +457,16 @@ export default function EmployeeProfile() {
           ) : (
             <div className="space-y-3">
               {employee.user?.email && (
-                <div className="flex items-center gap-2"><Mail className="w-4 h-4 text-gray-500" /> <span className="text-sm text-gray-300">{employee.user.email}</span></div>
+                <div className="flex items-center gap-2"><Mail className="w-4 h-4 text-quantum-zinc" /> <span className="text-sm text-gray-300">{employee.user.email}</span></div>
               )}
               {employee.phone && (
-                <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-gray-500" /> <span className="text-sm text-gray-300">{employee.phone}</span></div>
+                <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-quantum-zinc" /> <span className="text-sm text-gray-300">{employee.phone}</span></div>
               )}
               {employee.personalEmail && (
-                <div className="flex items-center gap-2"><Mail className="w-4 h-4 text-gray-500" /> <span className="text-sm text-gray-300">{employee.personalEmail}</span> <span className="text-xs text-gray-600">(personal)</span></div>
+                <div className="flex items-center gap-2"><Mail className="w-4 h-4 text-quantum-zinc" /> <span className="text-sm text-gray-300">{employee.personalEmail}</span> <span className="text-xs text-gray-600">(personal)</span></div>
               )}
               {employee.address && (
-                <div className="flex items-center gap-2"><MapPin className="w-4 h-4 text-gray-500" /> <span className="text-sm text-gray-300">{employee.address}</span></div>
+                <div className="flex items-center gap-2"><MapPin className="w-4 h-4 text-quantum-zinc" /> <span className="text-sm text-gray-300">{employee.address}</span></div>
               )}
               {employee.emergencyContact && (
                 <div className="flex items-center gap-2">
@@ -475,7 +475,7 @@ export default function EmployeeProfile() {
                 </div>
               )}
               {!employee.user?.email && !employee.phone && !employee.address && (
-                <p className="text-sm text-gray-500">No contact info added</p>
+                <p className="text-sm text-quantum-zinc">No contact info added</p>
               )}
             </div>
           )}
@@ -483,18 +483,18 @@ export default function EmployeeProfile() {
 
         {/* Work Details */}
         <div className="card p-6">
-          <h3 className="font-semibold mb-4 text-white">Work Details</h3>
+          <h3 className="font-semibold mb-4 tracking-wide text-white">Work Details</h3>
           <dl className="space-y-3 text-sm">
-            <div className="flex justify-between"><dt className="text-gray-400">Contract</dt><dd className="font-medium text-gray-300">{employee.contractType}</dd></div>
-            <div className="flex justify-between"><dt className="text-gray-400">Weekly Hours</dt><dd className="font-medium text-gray-300">{employee.weeklyHours}h</dd></div>
+            <div className="flex justify-between"><dt className="text-quantum-zinc">Contract</dt><dd className="font-medium text-gray-300">{employee.contractType}</dd></div>
+            <div className="flex justify-between"><dt className="text-quantum-zinc">Weekly Hours</dt><dd className="font-medium text-gray-300">{employee.weeklyHours}h</dd></div>
             {employee.manager && (
-              <div className="flex justify-between"><dt className="text-gray-400">Manager</dt><dd className="font-medium text-gray-300">{employee.manager.firstName} {employee.manager.lastName}</dd></div>
+              <div className="flex justify-between"><dt className="text-quantum-zinc">Manager</dt><dd className="font-medium text-gray-300">{employee.manager.firstName} {employee.manager.lastName}</dd></div>
             )}
             {employee.probationEndDate && (
-              <div className="flex justify-between"><dt className="text-gray-400">Probation Ends</dt><dd className="font-medium text-gray-300">{new Date(employee.probationEndDate).toLocaleDateString('bg-BG')}</dd></div>
+              <div className="flex justify-between"><dt className="text-quantum-zinc">Probation Ends</dt><dd className="font-medium text-gray-300">{new Date(employee.probationEndDate).toLocaleDateString('bg-BG')}</dd></div>
             )}
             <div className="flex justify-between">
-              <dt className="text-gray-400">Role</dt>
+              <dt className="text-quantum-zinc">Role</dt>
               <dd><span className="badge badge-blue">{ROLE_LABELS[employee.user?.role as keyof typeof ROLE_LABELS] || employee.user?.role}</span></dd>
             </div>
           </dl>
@@ -503,12 +503,12 @@ export default function EmployeeProfile() {
         {/* Manager & Team */}
         {employee.subordinates && employee.subordinates.length > 0 && (
           <div className="card p-6 lg:col-span-2">
-            <h3 className="font-semibold mb-4 text-white">Direct Reports ({employee.subordinates.length})</h3>
+            <h3 className="font-semibold mb-4 tracking-wide text-white">Direct Reports ({employee.subordinates.length})</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {employee.subordinates.map((sub) => (
-                <Link key={sub.id} to={`/employees/${sub.id}`} className="p-3 rounded-lg border border-gray-700 hover:bg-gray-700">
+                <Link key={sub.id} to={`/employees/${sub.id}`} className="p-3 rounded-2xl border hover:bg-white/[0.03]" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
                   <p className="font-medium text-sm text-gray-200">{sub.firstName} {sub.lastName}</p>
-                  <p className="text-xs text-gray-500">{(sub as any).jobTitle}</p>
+                  <p className="text-xs text-quantum-zinc">{(sub as any).jobTitle}</p>
                 </Link>
               ))}
             </div>

@@ -72,7 +72,7 @@ export default function PhotoReview() {
       <div className="flex flex-col items-center justify-center h-64 text-gray-500">
         <Camera className="w-12 h-12 mb-3 text-gray-600" />
         <p className="text-lg font-medium text-white">Access Restricted</p>
-        <p className="text-sm text-gray-400">Photo review is only available to managers and administrators.</p>
+        <p className="text-sm text-quantum-zinc">Photo review is only available to managers and administrators.</p>
       </div>
     );
   }
@@ -83,9 +83,9 @@ export default function PhotoReview() {
         <Link to="/" className="p-2 rounded-lg hover:bg-gray-700 text-gray-300">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-white">Photo Review Queue</h1>
+        <h1 className="text-2xl font-bold italic text-gradient-gold">Photo Review Queue</h1>
         {photos.length > 0 && (
-          <span className="badge bg-yellow-900/40 text-yellow-400">{photos.length} pending</span>
+          <span className="badge bg-yellow-500/10 text-yellow-400">{photos.length} pending</span>
         )}
       </div>
 
@@ -97,14 +97,14 @@ export default function PhotoReview() {
         <div className="card p-12 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <p className="text-lg font-medium text-white">All Clear</p>
-          <p className="text-sm text-gray-400 mt-1">No photos pending review</p>
+          <p className="text-sm text-quantum-zinc mt-1">No photos pending review</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {photos.map((photo) => (
             <div key={photo.id} className="card overflow-hidden">
               {/* Photo preview */}
-              <div className="aspect-square bg-gray-800 relative">
+              <div className="aspect-square bg-white/[0.03] relative">
                 <img src={photo.fileUrl} alt="" className="w-full h-full object-cover" />
                 <div className="absolute top-2 right-2 px-2 py-1 rounded bg-yellow-900/80 text-yellow-300 text-xs font-medium flex items-center gap-1">
                   <Clock className="w-3 h-3" /> PENDING
@@ -114,7 +114,7 @@ export default function PhotoReview() {
               {/* Employee info */}
               <div className="p-4">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-primary-900/40 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-primary-500/10 flex items-center justify-center overflow-hidden flex-shrink-0">
                     {photo.employee.photoUrl ? (
                       <img src={photo.employee.photoUrl} alt="" className="w-10 h-10 object-cover rounded-full" />
                     ) : (
@@ -125,14 +125,14 @@ export default function PhotoReview() {
                     <Link to={`/employees/${photo.employee.id}`} className="font-medium text-white hover:text-primary-400">
                       {photo.employee.firstName} {photo.employee.lastName}
                     </Link>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-quantum-zinc">
                       {photo.employee.jobTitle}
                       {photo.employee.user?.role && ` - ${ROLE_LABELS[photo.employee.user.role as keyof typeof ROLE_LABELS] || photo.employee.user.role}`}
                     </p>
                   </div>
                 </div>
 
-                <p className="text-xs text-gray-500 mb-3">
+                <p className="text-xs text-quantum-zinc mb-3">
                   Uploaded {new Date(photo.createdAt).toLocaleString('bg-BG')}
                 </p>
 
@@ -177,7 +177,7 @@ export default function PhotoReview() {
                     </button>
                     <button
                       onClick={() => setRejectingId(photo.id)}
-                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-red-900/40 text-red-400 hover:bg-red-900/60 text-sm"
+                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-2xl bg-red-500/10 text-red-400 hover:bg-red-900/60 text-sm"
                     >
                       <XCircle className="w-4 h-4" /> Reject
                     </button>

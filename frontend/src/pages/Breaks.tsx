@@ -113,29 +113,29 @@ export default function Breaks() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-white">Break Tracking</h1>
+      <h1 className="text-2xl font-bold italic text-gradient-gold">Break Tracking</h1>
 
       {/* Break Time Summary */}
       <div className="grid grid-cols-3 gap-4">
         <div className="card p-4 text-center">
           <Clock className="w-5 h-5 text-primary-400 mx-auto mb-1" />
           <p className="text-2xl font-bold text-white">{remainingTotal} min</p>
-          <p className="text-xs text-gray-400">Total Remaining</p>
-          <div className="w-full bg-gray-800 rounded-full h-2 mt-2">
+          <p className="text-xs text-quantum-zinc">Total Remaining</p>
+          <div className="w-full bg-white/[0.03] rounded-full h-2 mt-2">
             <div className="bg-primary-500 h-2 rounded-full transition-all" style={{ width: `${Math.max(0, (remainingTotal / TOTAL_BREAK_MINUTES) * 100)}%` }} />
           </div>
         </div>
         <div className="card p-4 text-center">
           <p className="text-lg font-bold text-white">{remainingLunch} min</p>
-          <p className="text-xs text-gray-400">Lunch (30 min)</p>
-          <div className="w-full bg-gray-800 rounded-full h-2 mt-2">
+          <p className="text-xs text-quantum-zinc">Lunch (30 min)</p>
+          <div className="w-full bg-white/[0.03] rounded-full h-2 mt-2">
             <div className="bg-orange-500 h-2 rounded-full transition-all" style={{ width: `${(remainingLunch / LUNCH_MINUTES) * 100}%` }} />
           </div>
         </div>
         <div className="card p-4 text-center">
           <p className="text-lg font-bold text-white">{remainingShort} min</p>
-          <p className="text-xs text-gray-400">Short Breaks (3x5 min)</p>
-          <div className="w-full bg-gray-800 rounded-full h-2 mt-2">
+          <p className="text-xs text-quantum-zinc">Short Breaks (3x5 min)</p>
+          <div className="w-full bg-white/[0.03] rounded-full h-2 mt-2">
             <div className="bg-green-500 h-2 rounded-full transition-all" style={{ width: `${(remainingShort / SHORT_BREAK_MINUTES) * 100}%` }} />
           </div>
         </div>
@@ -146,9 +146,9 @@ export default function Breaks() {
         {activeBreak ? (
           <>
             <Coffee className="w-12 h-12 text-primary-400 mx-auto mb-3 animate-pulse" />
-            <p className="text-lg font-semibold mb-1 text-white">Break in Progress</p>
-            <p className="text-sm text-gray-400 mb-4">{BREAK_CATEGORIES.find(c => c.value === activeBreak.category)?.label || activeBreak.category}</p>
-            <div className="text-5xl font-mono font-bold mb-6 text-primary-400">
+            <p className="text-lg font-semibold tracking-wide mb-1 text-white">Break in Progress</p>
+            <p className="text-sm text-quantum-zinc mb-4">{BREAK_CATEGORIES.find(c => c.value === activeBreak.category)?.label || activeBreak.category}</p>
+            <div className="text-5xl font-mono tracking-wider font-bold mb-6 text-primary-400">
               {formatDuration(elapsed)}
             </div>
             <button onClick={endBreak} disabled={actionLoading} className="btn-danger px-8 py-3">
@@ -158,17 +158,18 @@ export default function Breaks() {
         ) : (
           <>
             <Coffee className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-            <p className="text-lg font-semibold mb-4 text-white">Start a Break</p>
+            <p className="text-lg font-semibold tracking-wide mb-4 text-white">Start a Break</p>
             <div className="flex justify-center gap-2 mb-6 flex-wrap">
               {BREAK_CATEGORIES.map((cat) => (
                 <button
                   key={cat.value}
                   onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                  className={`px-4 py-2 rounded-2xl text-sm font-medium border transition-colors ${
                     selectedCategory === cat.value
-                      ? 'border-primary-500 bg-primary-900/40 text-primary-400'
-                      : 'border-gray-700 hover:bg-gray-800 text-gray-400'
+                      ? 'border-primary-500 bg-primary-500/10 text-primary-400'
+                      : 'text-quantum-zinc hover:bg-white/[0.03]'
                   }`}
+                  style={{ borderColor: selectedCategory === cat.value ? undefined : 'rgba(217, 176, 97, 0.08)' }}
                 >
                   {cat.icon} {cat.label}
                 </button>
@@ -184,24 +185,24 @@ export default function Breaks() {
 
       {/* Today's Breaks */}
       <div className="card p-6">
-        <h2 className="font-semibold mb-4 text-white">Today's Breaks</h2>
+        <h2 className="font-semibold mb-4 tracking-wide text-white">Today's Breaks</h2>
         {loading ? (
           <div className="flex justify-center py-4"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-500"></div></div>
         ) : breaks.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">No breaks today</p>
+          <p className="text-quantum-zinc text-center py-4">No breaks today</p>
         ) : (
           <div className="space-y-2">
             {breaks.map((b) => (
-              <div key={b.id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+              <div key={b.id} className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.03]">
                 <span className="text-xl">{BREAK_CATEGORIES.find(c => c.value === b.category)?.icon || '📋'}</span>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-white">{BREAK_CATEGORIES.find(c => c.value === b.category)?.label || b.category}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-quantum-zinc">
                     {new Date(b.startTime).toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' })}
                     {b.endTime && ` - ${new Date(b.endTime).toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' })}`}
                   </p>
                 </div>
-                {b.duration != null && <span className="text-sm text-gray-400">{b.duration} min</span>}
+                {b.duration != null && <span className="text-sm text-quantum-zinc">{b.duration} min</span>}
                 <span className={`badge ${statusColors[b.status] || 'badge-gray'}`}>{b.status}</span>
               </div>
             ))}

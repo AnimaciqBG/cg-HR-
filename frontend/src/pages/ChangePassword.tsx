@@ -100,36 +100,34 @@ export default function ChangePassword() {
   // 2FA Setup Prompt (after password change)
   if (show2FAPrompt) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#020202] p-4 grain-overlay">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 mb-4">
-              <Smartphone className="w-8 h-8 text-white" />
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-[1.5rem] mb-6 shadow-gold-lg" style={{ background: 'linear-gradient(135deg, #D9B061, #8A6D3B)' }}>
+              <Smartphone className="w-9 h-9 text-[#020202]" />
             </div>
-            <h1 className="text-2xl font-bold text-white">Enable Two-Factor Authentication</h1>
-            <p className="text-gray-400 mt-2 text-sm">
+            <h1 className="text-2xl font-bold italic text-gradient-gold">Enable Two-Factor Authentication</h1>
+            <p className="text-quantum-zinc mt-2 text-sm tracking-wide">
               As a member of the leadership team, we recommend enabling 2FA for additional security.
             </p>
           </div>
 
-          <div className="card p-8">
+          <div className="card p-10">
             {!qrCode ? (
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {twoFAError && (
-                  <div className="p-3 rounded-lg bg-red-900/30 text-red-400 text-sm">{twoFAError}</div>
+                  <div className="p-4 rounded-2xl text-sm" style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.15)', color: '#f87171' }}>{twoFAError}</div>
                 )}
 
-                <div className="p-4 rounded-lg bg-blue-900/20 border border-blue-800/50">
-                  <p className="text-sm text-blue-300">
-                    Two-factor authentication adds an extra layer of security by requiring a code from your
-                    authenticator app (Google Authenticator, Authy, etc.) when signing in.
-                  </p>
+                <div className="p-4 rounded-2xl text-sm" style={{ background: 'rgba(217, 176, 97, 0.04)', border: '1px solid rgba(217, 176, 97, 0.1)', color: '#D9B061' }}>
+                  Two-factor authentication adds an extra layer of security by requiring a code from your
+                  authenticator app (Google Authenticator, Authy, etc.) when signing in.
                 </div>
 
                 <button
                   onClick={handleSetup2FA}
                   disabled={setting2FA}
-                  className="btn-primary w-full py-2.5"
+                  className="btn-primary w-full py-3"
                 >
                   {setting2FA ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                     <span className="flex items-center justify-center gap-2">
@@ -140,7 +138,7 @@ export default function ChangePassword() {
 
                 <button
                   onClick={() => navigate('/')}
-                  className="w-full text-center text-sm text-gray-500 hover:text-gray-300 py-2"
+                  className="w-full text-center text-sm text-quantum-zinc hover:text-primary-400 py-2 transition-colors tracking-wide"
                 >
                   Skip for now <ArrowRight className="w-3 h-3 inline ml-1" />
                 </button>
@@ -150,34 +148,34 @@ export default function ChangePassword() {
                 <Loader2 className="w-8 h-8 animate-spin text-primary-400 mx-auto" />
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {twoFAError && (
-                  <div className="p-3 rounded-lg bg-red-900/30 text-red-400 text-sm">{twoFAError}</div>
+                  <div className="p-4 rounded-2xl text-sm" style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.15)', color: '#f87171' }}>{twoFAError}</div>
                 )}
 
                 <div className="text-center">
-                  <p className="text-sm text-gray-300 mb-3">
+                  <p className="text-sm text-gray-300 mb-3 tracking-wide">
                     Scan this QR code with your authenticator app:
                   </p>
-                  <img src={qrCode} alt="2FA QR Code" className="mx-auto rounded-lg" />
+                  <img src={qrCode} alt="2FA QR Code" className="mx-auto rounded-2xl" />
                 </div>
 
-                <div className="p-3 rounded-lg bg-gray-800 border border-gray-700">
-                  <p className="text-xs text-gray-400 mb-2 font-medium">Recovery Codes (save these!):</p>
+                <div className="p-4 rounded-2xl" style={{ background: 'rgba(217, 176, 97, 0.04)', border: '1px solid rgba(217, 176, 97, 0.08)' }}>
+                  <p className="label-luxury mb-2">Recovery Codes (save these!)</p>
                   <div className="grid grid-cols-2 gap-1">
                     {recoveryCodes.map((code, i) => (
-                      <code key={i} className="text-xs text-yellow-400 font-mono">{code}</code>
+                      <code key={i} className="text-xs text-primary-400 font-mono">{code}</code>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Verification Code</label>
+                  <label className="label-luxury mb-2 block">Verification Code</label>
                   <input
                     type="text"
                     value={totpCode}
                     onChange={(e) => setTotpCode(e.target.value)}
-                    className="input-field text-center text-xl tracking-widest"
+                    className="input-field text-center text-xl tracking-[0.5em] font-light"
                     placeholder="000000"
                     maxLength={6}
                   />
@@ -186,14 +184,14 @@ export default function ChangePassword() {
                 <button
                   onClick={handleConfirm2FA}
                   disabled={setting2FA || totpCode.length < 6}
-                  className="btn-primary w-full py-2.5 disabled:opacity-50"
+                  className="btn-primary w-full py-3"
                 >
                   {setting2FA ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verify & Enable 2FA'}
                 </button>
 
                 <button
                   onClick={() => navigate('/')}
-                  className="w-full text-center text-sm text-gray-500 hover:text-gray-300 py-2"
+                  className="w-full text-center text-sm text-quantum-zinc hover:text-primary-400 py-2 transition-colors tracking-wide"
                 >
                   Skip for now <ArrowRight className="w-3 h-3 inline ml-1" />
                 </button>
@@ -206,32 +204,32 @@ export default function ChangePassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#020202] p-4 grain-overlay">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-600 mb-4">
-            <Lock className="w-8 h-8 text-black" />
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-[1.5rem] mb-6 shadow-gold-lg" style={{ background: 'linear-gradient(135deg, #D9B061, #8A6D3B)' }}>
+            <Lock className="w-9 h-9 text-[#020202]" />
           </div>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-bold italic text-gradient-gold">
             {isFirstLogin ? 'Set Your New Password' : 'Change Password'}
           </h1>
           {isFirstLogin && (
-            <p className="text-gray-400 mt-2 text-sm">
+            <p className="text-quantum-zinc mt-2 text-sm tracking-wide">
               For security, you must change your temporary password before continuing.
             </p>
           )}
         </div>
 
-        <div className="card p-8">
+        <div className="card p-10">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="p-3 rounded-lg bg-red-900/30 text-red-400 text-sm">
+              <div className="p-4 rounded-2xl text-sm" style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.15)', color: '#f87171' }}>
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className="label-luxury mb-2 block">
                 {isFirstLogin ? 'Temporary Password' : 'Current Password'}
               </label>
               <div className="relative">
@@ -239,7 +237,7 @@ export default function ChangePassword() {
                   type={showCurrent ? 'text' : 'password'}
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="input-field pr-10"
+                  className="input-field pr-12"
                   placeholder={isFirstLogin ? 'Enter the password from your email' : 'Enter current password'}
                   required
                   autoFocus
@@ -247,7 +245,7 @@ export default function ChangePassword() {
                 <button
                   type="button"
                   onClick={() => setShowCurrent(!showCurrent)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-quantum-zinc hover:text-primary-400 transition-colors"
                 >
                   {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -255,20 +253,20 @@ export default function ChangePassword() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">New Password</label>
+              <label className="label-luxury mb-2 block">New Password</label>
               <div className="relative">
                 <input
                   type={showNew ? 'text' : 'password'}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="input-field pr-10"
+                  className="input-field pr-12"
                   placeholder="Create a strong password"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowNew(!showNew)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-quantum-zinc hover:text-primary-400 transition-colors"
                 >
                   {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -276,11 +274,11 @@ export default function ChangePassword() {
 
               {/* Strength indicators */}
               {newPassword.length > 0 && (
-                <div className="mt-2 space-y-1">
+                <div className="mt-3 space-y-1.5">
                   {checks.map((check, i) => (
                     <div key={i} className="flex items-center gap-2 text-xs">
-                      <Check className={`w-3 h-3 ${check.pass ? 'text-green-400' : 'text-gray-600'}`} />
-                      <span className={check.pass ? 'text-green-400' : 'text-gray-500'}>{check.label}</span>
+                      <Check className={`w-3 h-3 ${check.pass ? 'text-green-400' : 'text-quantum-zinc/30'}`} />
+                      <span className={`tracking-wide ${check.pass ? 'text-green-400' : 'text-quantum-zinc/50'}`}>{check.label}</span>
                     </div>
                   ))}
                 </div>
@@ -288,7 +286,7 @@ export default function ChangePassword() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Confirm New Password</label>
+              <label className="label-luxury mb-2 block">Confirm New Password</label>
               <input
                 type="password"
                 value={confirmPassword}
@@ -298,14 +296,14 @@ export default function ChangePassword() {
                 required
               />
               {confirmPassword.length > 0 && newPassword !== confirmPassword && (
-                <p className="text-xs text-red-400 mt-1">Passwords do not match</p>
+                <p className="text-xs text-red-400 mt-1.5 tracking-wide">Passwords do not match</p>
               )}
             </div>
 
             <button
               type="submit"
               disabled={loading || !allPassed}
-              className="btn-primary w-full py-2.5 disabled:opacity-50"
+              className="btn-primary w-full py-3"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                 <span className="flex items-center justify-center gap-2">

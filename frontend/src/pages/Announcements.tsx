@@ -49,7 +49,7 @@ export default function Announcements() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Announcements</h1>
+        <h1 className="text-2xl font-bold italic text-gradient-gold">Announcements</h1>
         {hasMinRole('TEAM_LEAD') && (
           <button onClick={() => setShowCreate(!showCreate)} className="btn-primary">
             <Plus className="w-4 h-4 mr-1" /> New Announcement
@@ -60,7 +60,7 @@ export default function Announcements() {
       {showCreate && (
         <div className="card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white">New Announcement</h3>
+            <h3 className="text-lg font-semibold tracking-wide text-white">New Announcement</h3>
             <button onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
           </div>
           <form onSubmit={handleCreate} className="space-y-4">
@@ -89,7 +89,7 @@ export default function Announcements() {
       {loading ? (
         <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div></div>
       ) : announcements.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-quantum-zinc">
           <Megaphone className="w-12 h-12 mx-auto mb-3 text-gray-600" />
           <p>No announcements</p>
         </div>
@@ -109,7 +109,7 @@ export default function Announcements() {
                     {ann.isPinned && <Pin className="w-4 h-4 text-primary-400" />}
                     {!ann.isRead && <span className="badge badge-blue">New</span>}
                   </div>
-                  <p className="text-sm text-gray-400 mt-2 whitespace-pre-wrap">{ann.content}</p>
+                  <p className="text-sm text-quantum-zinc mt-2 whitespace-pre-wrap">{ann.content}</p>
                   <p className="text-xs text-gray-600 mt-2">
                     {new Date(ann.publishedAt).toLocaleDateString('bg-BG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </p>

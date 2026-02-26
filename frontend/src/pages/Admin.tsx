@@ -133,7 +133,7 @@ export default function Admin() {
       <div className="flex flex-col items-center justify-center h-64 text-gray-500">
         <Lock className="w-12 h-12 mb-3 text-gray-600" />
         <p className="text-lg font-medium text-white">Access Restricted</p>
-        <p className="text-sm text-gray-400">Administration is only available to managers.</p>
+        <p className="text-sm text-quantum-zinc">Administration is only available to managers.</p>
       </div>
     );
   }
@@ -155,12 +155,12 @@ export default function Admin() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-white">Administration</h1>
+      <h1 className="text-2xl font-bold italic text-gradient-gold">Administration</h1>
 
       <div className="flex gap-2 flex-wrap">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setActiveTab(t.key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${activeTab === t.key ? 'bg-primary-900/40 text-primary-400' : 'bg-gray-800 text-gray-400'}`}>
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${activeTab === t.key ? 'bg-primary-500/10 text-primary-400' : 'bg-white/[0.03] text-quantum-zinc'}`}>
             <t.icon className="w-4 h-4" /> {t.label}
           </button>
         ))}
@@ -177,32 +177,32 @@ export default function Admin() {
                 <div className="card p-6 text-center">
                   <Users className="w-8 h-8 mx-auto text-primary-400 mb-2" />
                   <p className="text-3xl font-bold text-white">{license.activeUsers} / {license.maxUsers}</p>
-                  <p className="text-sm text-gray-400 mt-1">Active Users</p>
+                  <p className="text-sm text-quantum-zinc mt-1">Active Users</p>
                   {!license.canAddUser && <p className="text-xs text-red-400 mt-2 flex items-center justify-center gap-1"><AlertCircle className="w-3 h-3" /> Limit reached</p>}
-                  <div className="w-full bg-gray-800 rounded-full h-2 mt-3">
+                  <div className="w-full bg-white/[0.03] rounded-full h-2 mt-3">
                     <div className={`h-2 rounded-full ${license.canAddUser ? 'bg-primary-500' : 'bg-red-500'}`} style={{ width: `${(license.activeUsers / license.maxUsers) * 100}%` }}></div>
                   </div>
                 </div>
                 <div className="card p-6 text-center">
                   <Shield className="w-8 h-8 mx-auto text-purple-400 mb-2" />
                   <p className="text-3xl font-bold text-white">{license.activeAdmins} / {license.maxAdmins}</p>
-                  <p className="text-sm text-gray-400 mt-1">Admins</p>
+                  <p className="text-sm text-quantum-zinc mt-1">Admins</p>
                 </div>
                 <div className="card p-6 text-center">
                   <Key className="w-8 h-8 mx-auto text-red-400 mb-2" />
                   <p className="text-3xl font-bold text-white">{license.activeSuperAdmins} / {license.maxSuperAdmins}</p>
-                  <p className="text-sm text-gray-400 mt-1">Main Managers</p>
+                  <p className="text-sm text-quantum-zinc mt-1">Main Managers</p>
                 </div>
               </div>
 
               {/* Role Hierarchy */}
               <div className="card p-6">
-                <h3 className="font-semibold mb-3 text-white">Cinema Role Structure</h3>
+                <h3 className="font-semibold mb-3 tracking-wide text-white">Cinema Role Structure</h3>
                 <div className="space-y-2">
                   {Object.entries(ROLE_LABELS).map(([role, label]) => (
-                    <div key={role} className="flex items-center justify-between p-2 rounded-lg bg-gray-800/50">
+                    <div key={role} className="flex items-center justify-between p-2 rounded-2xl bg-white/[0.03]">
                       <span className="text-sm text-gray-300">{label}</span>
-                      <span className="text-xs text-gray-500 font-mono">{role}</span>
+                      <span className="text-xs text-quantum-zinc font-mono">{role}</span>
                     </div>
                   ))}
                 </div>
@@ -215,10 +215,10 @@ export default function Admin() {
             <div className="card p-6">
               <div className="space-y-2">
                 {locations.map((l: any) => (
-                  <div key={l.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+                  <div key={l.id} className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.03]">
                     <div>
                       <p className="font-medium text-white">{l.name}</p>
-                      <p className="text-xs text-gray-500">{l.address}, {l.city}</p>
+                      <p className="text-xs text-quantum-zinc">{l.address}, {l.city}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`badge ${l.isActive ? 'badge-green' : 'badge-gray'}`}>{l.isActive ? 'Active' : 'Inactive'}</span>
@@ -226,7 +226,7 @@ export default function Admin() {
                     </div>
                   </div>
                 ))}
-                {locations.length === 0 && <p className="text-gray-500 text-center py-4">No locations configured</p>}
+                {locations.length === 0 && <p className="text-quantum-zinc text-center py-4">No locations configured</p>}
               </div>
             </div>
           )}
@@ -236,21 +236,21 @@ export default function Admin() {
             <div className="space-y-4">
               {Object.entries(settings).map(([group, items]) => (
                 <div key={group} className="card p-6">
-                  <h3 className="font-semibold capitalize mb-3 text-white">{group}</h3>
+                  <h3 className="font-semibold capitalize mb-3 tracking-wide text-white">{group}</h3>
                   <div className="space-y-2">
                     {items.map((s: any) => (
                       <div key={s.key} className="flex items-center justify-between p-2 text-sm">
                         <div>
                           <p className="font-medium text-gray-300">{s.key}</p>
-                          {s.description && <p className="text-xs text-gray-500">{s.description}</p>}
+                          {s.description && <p className="text-xs text-quantum-zinc">{s.description}</p>}
                         </div>
-                        <span className="font-mono bg-gray-800 px-2 py-1 rounded text-primary-400">{s.value}</span>
+                        <span className="font-mono bg-white/[0.03] px-2 py-1 rounded text-primary-400">{s.value}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               ))}
-              {Object.keys(settings).length === 0 && <p className="text-gray-500 text-center py-4">No settings configured</p>}
+              {Object.keys(settings).length === 0 && <p className="text-quantum-zinc text-center py-4">No settings configured</p>}
             </div>
           )}
 
@@ -261,12 +261,12 @@ export default function Admin() {
                 <>
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold text-white">User Permissions</h2>
-                    <button onClick={() => fetchTabData()} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-800 text-gray-400 hover:text-white text-sm">
+                    <button onClick={() => fetchTabData()} className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white/[0.03] text-quantum-zinc hover:text-white text-sm">
                       <RefreshCw className="w-4 h-4" /> Refresh
                     </button>
                   </div>
 
-                  <p className="text-sm text-gray-400">Select a user to view and modify their permissions. Overrides allow granting or denying specific permissions beyond their role defaults.</p>
+                  <p className="text-sm text-quantum-zinc">Select a user to view and modify their permissions. Overrides allow granting or denying specific permissions beyond their role defaults.</p>
 
                   <div className="space-y-2">
                     {matrixData.map((entry) => {
@@ -277,7 +277,7 @@ export default function Admin() {
                           className="card p-4 cursor-pointer hover:border-primary-500/50 transition-colors">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-primary-900/40 flex items-center justify-center">
+                              <div className="w-10 h-10 rounded-full bg-primary-500/10 flex items-center justify-center">
                                 <span className="text-primary-400 font-semibold text-sm">
                                   {entry.user.employee ? `${entry.user.employee.firstName[0]}${entry.user.employee.lastName[0]}` : entry.user.email[0].toUpperCase()}
                                 </span>
@@ -286,18 +286,18 @@ export default function Admin() {
                                 <p className="font-medium text-white">
                                   {entry.user.employee ? `${entry.user.employee.firstName} ${entry.user.employee.lastName}` : entry.user.email}
                                 </p>
-                                <p className="text-xs text-gray-400">
+                                <p className="text-xs text-quantum-zinc">
                                   {ROLE_LABELS[entry.user.role as keyof typeof ROLE_LABELS] || entry.user.role}
                                   {entry.user.employee?.jobTitle && ` - ${entry.user.employee.jobTitle}`}
                                 </p>
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-quantum-zinc">
                                 {entry.effectivePermissions.length} permissions
                               </span>
                               {overrideCount > 0 && (
-                                <span className="badge bg-primary-900/40 text-primary-400 text-xs">
+                                <span className="badge bg-primary-500/10 text-primary-400 text-xs">
                                   {overrideCount} override{overrideCount !== 1 ? 's' : ''}
                                 </span>
                               )}
@@ -313,14 +313,14 @@ export default function Admin() {
                   {/* Permission Editor for selected user */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <button onClick={() => setSelectedUser(null)} className="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-400 hover:text-white text-sm">
+                      <button onClick={() => setSelectedUser(null)} className="px-3 py-1.5 rounded-2xl bg-white/[0.03] text-quantum-zinc hover:text-white text-sm">
                         Back
                       </button>
                       <div>
                         <h2 className="text-lg font-semibold text-white">
                           {selectedEntry?.user.employee ? `${selectedEntry.user.employee.firstName} ${selectedEntry.user.employee.lastName}` : selectedEntry?.user.email}
                         </h2>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-quantum-zinc">
                           Role: {ROLE_LABELS[selectedEntry?.user.role as keyof typeof ROLE_LABELS] || selectedEntry?.user.role}
                         </p>
                       </div>
@@ -331,7 +331,7 @@ export default function Admin() {
                     </button>
                   </div>
 
-                  <div className="flex gap-4 text-xs text-gray-400">
+                  <div className="flex gap-4 text-xs text-quantum-zinc">
                     <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-gray-700 inline-block"></span> Role Default</span>
                     <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-900 inline-block"></span> Granted Override</span>
                     <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-900 inline-block"></span> Denied Override</span>
@@ -341,13 +341,13 @@ export default function Admin() {
                     {Object.entries(categories).map(([category, perms]) => (
                       <div key={category} className="card overflow-hidden">
                         <button onClick={() => toggleCategory(category)}
-                          className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-800/30">
+                          className="w-full flex items-center justify-between p-4 text-left hover:bg-white/[0.02]">
                           <h3 className="font-semibold text-white">{category}</h3>
-                          <span className="text-xs text-gray-500">{perms.length} permissions</span>
+                          <span className="text-xs text-quantum-zinc">{perms.length} permissions</span>
                         </button>
 
                         {expandedCategories.has(category) && (
-                          <div className="border-t border-gray-800 divide-y divide-gray-800/50">
+                          <div className="border-t divide-y" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
                             {perms.map((perm) => {
                               const state = editOverrides[perm] || 'role';
                               const hasRole = selectedEntry?.rolePermissions.includes(perm);
@@ -359,7 +359,7 @@ export default function Admin() {
                                   className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors ${
                                     state === 'granted' ? 'bg-green-900/20 hover:bg-green-900/30' :
                                     state === 'denied' ? 'bg-red-900/20 hover:bg-red-900/30' :
-                                    'hover:bg-gray-800/30'
+                                    'hover:bg-white/[0.02]'
                                   }`}>
                                   <div className="flex items-center gap-3">
                                     <div className={`w-6 h-6 rounded flex items-center justify-center ${
@@ -369,20 +369,20 @@ export default function Admin() {
                                     </div>
                                     <div>
                                       <p className="text-sm text-gray-200 font-mono">{perm}</p>
-                                      <p className="text-xs text-gray-500 capitalize">{getPermLabel(perm)}</p>
+                                      <p className="text-xs text-quantum-zinc capitalize">{getPermLabel(perm)}</p>
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     {hasRole && (
-                                      <span className="text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">role default</span>
+                                      <span className="text-xs text-quantum-zinc bg-white/[0.03] px-2 py-0.5 rounded">role default</span>
                                     )}
                                     {state === 'granted' && (
-                                      <span className="text-xs text-green-400 bg-green-900/40 px-2 py-0.5 rounded flex items-center gap-1">
+                                      <span className="text-xs text-green-400 bg-green-500/10 px-2 py-0.5 rounded flex items-center gap-1">
                                         <Check className="w-3 h-3" /> granted
                                       </span>
                                     )}
                                     {state === 'denied' && (
-                                      <span className="text-xs text-red-400 bg-red-900/40 px-2 py-0.5 rounded flex items-center gap-1">
+                                      <span className="text-xs text-red-400 bg-red-500/10 px-2 py-0.5 rounded flex items-center gap-1">
                                         <X className="w-3 h-3" /> denied
                                       </span>
                                     )}
@@ -410,7 +410,7 @@ export default function Admin() {
             <div className="card overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-800/50">
+                  <thead className="bg-white/[0.03]">
                     <tr>
                       <th className="px-4 py-3 text-left font-medium text-gray-300">Time</th>
                       <th className="px-4 py-3 text-left font-medium text-gray-300">Actor</th>
@@ -419,19 +419,19 @@ export default function Admin() {
                       <th className="px-4 py-3 text-left font-medium text-gray-300">IP</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-800">
+                  <tbody className="divide-y" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
                     {auditLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-gray-800/30">
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">{new Date(log.createdAt).toLocaleString('bg-BG')}</td>
+                      <tr key={log.id} className="hover:bg-white/[0.02]">
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-quantum-zinc">{new Date(log.createdAt).toLocaleString('bg-BG')}</td>
                         <td className="px-4 py-3 text-gray-300">{log.actor?.email || 'System'}</td>
                         <td className="px-4 py-3"><span className="badge badge-gray">{log.action}</span></td>
-                        <td className="px-4 py-3 text-xs text-gray-400">{log.objectType} {log.objectId?.slice(0, 8)}</td>
-                        <td className="px-4 py-3 text-xs font-mono text-gray-500">{log.ipAddress}</td>
+                        <td className="px-4 py-3 text-xs text-quantum-zinc">{log.objectType} {log.objectId?.slice(0, 8)}</td>
+                        <td className="px-4 py-3 text-xs font-mono text-quantum-zinc">{log.ipAddress}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                {auditLogs.length === 0 && <p className="text-gray-500 text-center py-8">No audit logs</p>}
+                {auditLogs.length === 0 && <p className="text-quantum-zinc text-center py-8">No audit logs</p>}
               </div>
             </div>
           )}

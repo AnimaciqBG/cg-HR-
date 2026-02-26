@@ -79,7 +79,7 @@ export default function TaskReview() {
       <div className="flex flex-col items-center justify-center h-64 text-gray-500">
         <Eye className="w-12 h-12 mb-3 text-gray-600" />
         <p className="text-lg font-medium text-white">Access Restricted</p>
-        <p className="text-sm text-gray-400">Task review is only available to managers and administrators.</p>
+        <p className="text-sm text-quantum-zinc">Task review is only available to managers and administrators.</p>
       </div>
     );
   }
@@ -90,9 +90,9 @@ export default function TaskReview() {
         <Link to="/tasks" className="p-2 rounded-lg hover:bg-gray-700 text-gray-300">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-white">Task Review Queue</h1>
+        <h1 className="text-2xl font-bold italic text-gradient-gold">Task Review Queue</h1>
         {tasks.length > 0 && (
-          <span className="badge bg-purple-900/40 text-purple-400">{tasks.length} pending</span>
+          <span className="badge bg-purple-500/10 text-purple-400">{tasks.length} pending</span>
         )}
       </div>
 
@@ -104,7 +104,7 @@ export default function TaskReview() {
         <div className="card p-12 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <p className="text-lg font-medium text-white">All Clear</p>
-          <p className="text-sm text-gray-400 mt-1">No tasks pending review</p>
+          <p className="text-sm text-quantum-zinc mt-1">No tasks pending review</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -114,10 +114,10 @@ export default function TaskReview() {
               <div
                 key={task.id}
                 onClick={() => { setSelectedTask(task); setReviewForm({ rating: 5, comment: '' }); setSelectedProof(null); }}
-                className={`card p-4 cursor-pointer transition-all hover:border-purple-800/50 ${selectedTask?.id === task.id ? 'border-purple-700 bg-gray-800/60' : ''}`}
+                className={`card p-4 cursor-pointer transition-all hover:border-purple-800/50 ${selectedTask?.id === task.id ? 'border-purple-700 bg-white/[0.03]' : ''}`}
               >
                 <h3 className="font-medium text-white">{task.title}</h3>
-                <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                <div className="flex items-center gap-3 mt-2 text-xs text-quantum-zinc">
                   <span className="flex items-center gap-1">
                     <User className="w-3 h-3" /> {task.assignee.firstName} {task.assignee.lastName}
                   </span>
@@ -163,7 +163,7 @@ export default function TaskReview() {
 
                 {/* Large preview */}
                 {selectedProof && (
-                  <div className="mb-3 rounded-xl overflow-hidden bg-gray-800 border border-gray-700">
+                  <div className="mb-3 rounded-xl overflow-hidden bg-white/[0.03] border" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
                     <img src={selectedProof} alt="" className="w-full max-h-80 object-contain" />
                   </div>
                 )}
@@ -173,7 +173,8 @@ export default function TaskReview() {
                     <button
                       key={proof.id}
                       onClick={() => setSelectedProof(proof.fileUrl)}
-                      className={`aspect-square rounded-lg overflow-hidden bg-gray-800 border transition-colors flex items-center justify-center ${selectedProof === proof.fileUrl ? 'border-primary-500' : 'border-gray-700 hover:border-gray-600'}`}
+                      className={`aspect-square rounded-2xl overflow-hidden bg-white/[0.03] border transition-colors flex items-center justify-center ${selectedProof === proof.fileUrl ? 'border-primary-500' : 'hover:border-gray-600'}`}
+                      style={{ borderColor: selectedProof === proof.fileUrl ? undefined : 'rgba(217, 176, 97, 0.08)' }}
                     >
                       {proof.mimeType?.startsWith('image/') ? (
                         <img src={proof.fileUrl} alt="" className="w-full h-full object-cover" />
@@ -215,7 +216,7 @@ export default function TaskReview() {
                 <button
                   onClick={() => handleReview(selectedTask.id, 'APPROVED')}
                   disabled={reviewing}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-green-600 text-white hover:bg-green-500 font-medium disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-green-600 text-white hover:bg-green-500 font-medium disabled:opacity-50"
                 >
                   {reviewing ? (
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -226,7 +227,7 @@ export default function TaskReview() {
                 <button
                   onClick={() => handleReview(selectedTask.id, 'REJECTED')}
                   disabled={reviewing}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-red-600 text-white hover:bg-red-500 font-medium disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-600 text-white hover:bg-red-500 font-medium disabled:opacity-50"
                 >
                   <XCircle className="w-5 h-5" /> Reject
                 </button>

@@ -96,7 +96,7 @@ export default function TimeTracking() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-white">Time & Attendance</h1>
+      <h1 className="text-2xl font-bold italic text-gradient-gold">Time & Attendance</h1>
 
       {/* Today's Shift Info */}
       {todayShift ? (
@@ -104,7 +104,7 @@ export default function TimeTracking() {
           <Calendar className="w-6 h-6 text-primary-400" />
           <div>
             <p className="text-sm font-medium text-white">Today's Shift: {shiftStartStr} - {shiftEndStr}</p>
-            <p className="text-xs text-gray-400">{todayShift.template?.name || 'Custom Shift'}</p>
+            <p className="text-xs text-quantum-zinc">{todayShift.template?.name || 'Custom Shift'}</p>
           </div>
           <span className="badge badge-green ml-auto">Scheduled</span>
         </div>
@@ -117,10 +117,10 @@ export default function TimeTracking() {
 
       {/* Clock In/Out Card */}
       <div className="card p-8 text-center">
-        <div className="text-5xl font-mono font-bold mb-4 text-white">
+        <div className="text-5xl font-mono tracking-wider font-bold mb-4 text-white">
           {currentTime.toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </div>
-        <p className="text-gray-400 mb-6">
+        <p className="text-quantum-zinc mb-6">
           {currentTime.toLocaleDateString('bg-BG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
 
@@ -146,28 +146,28 @@ export default function TimeTracking() {
           </p>
         )}
 
-        <p className={`text-sm mt-4 ${clockedIn ? 'text-green-400' : 'text-gray-500'}`}>
+        <p className={`text-sm mt-4 ${clockedIn ? 'text-green-400' : 'text-quantum-zinc'}`}>
           {clockedIn ? 'You are currently clocked in' : 'You are not clocked in'}
         </p>
       </div>
 
       {/* Today's Entries */}
       <div className="card p-6">
-        <h2 className="font-semibold mb-4 text-white">Today's Time Entries</h2>
+        <h2 className="font-semibold mb-4 tracking-wide text-white">Today's Time Entries</h2>
         {loading ? (
           <div className="flex justify-center py-4"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-500"></div></div>
         ) : entries.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">No entries today</p>
+          <p className="text-quantum-zinc text-center py-4">No entries today</p>
         ) : (
           <div className="space-y-2">
             {entries.map((entry) => (
-              <div key={entry.id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+              <div key={entry.id} className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.03]">
                 <div className={`p-2 rounded-lg ${entry.type === 'CLOCK_IN' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
                   {entry.type === 'CLOCK_IN' ? <LogIn className="w-4 h-4" /> : <LogOut className="w-4 h-4" />}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-white">{entry.type.replace('_', ' ')}</p>
-                  <p className="text-xs text-gray-500">{new Date(entry.timestamp).toLocaleTimeString('bg-BG')}</p>
+                  <p className="text-xs text-quantum-zinc">{new Date(entry.timestamp).toLocaleTimeString('bg-BG')}</p>
                 </div>
                 {entry.isManual && <span className="badge badge-yellow ml-auto">Manual</span>}
               </div>

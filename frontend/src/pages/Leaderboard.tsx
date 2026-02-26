@@ -91,7 +91,7 @@ export default function Leaderboard() {
       <div className="flex flex-col items-center justify-center h-64 text-gray-500">
         <Trophy className="w-12 h-12 mb-3 text-gray-600" />
         <p className="text-lg font-medium text-white">Access Restricted</p>
-        <p className="text-sm text-gray-400">Leaderboard is only available to managers and administrators.</p>
+        <p className="text-sm text-quantum-zinc">Leaderboard is only available to managers and administrators.</p>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default function Leaderboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <h1 className="text-2xl font-bold italic text-gradient-gold flex items-center gap-2">
             <Trophy className="w-7 h-7 text-yellow-400" /> Leaderboard
           </h1>
         </div>
@@ -135,7 +135,7 @@ export default function Leaderboard() {
         <div className="card p-12 text-center">
           <TrendingUp className="w-16 h-16 text-gray-600 mx-auto mb-4" />
           <p className="text-lg font-medium text-white">No Scores Yet</p>
-          <p className="text-sm text-gray-400 mt-1">Click "Recalculate All" to generate performance scores for all employees.</p>
+          <p className="text-sm text-quantum-zinc mt-1">Click "Recalculate All" to generate performance scores for all employees.</p>
         </div>
       ) : (
         <>
@@ -150,7 +150,7 @@ export default function Leaderboard() {
                     <div className={`text-3xl font-bold ${podiumColor} mb-2`}>
                       #{rank}
                     </div>
-                    <div className="w-16 h-16 mx-auto rounded-full bg-primary-900/40 flex items-center justify-center overflow-hidden mb-2">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-primary-500/10 flex items-center justify-center overflow-hidden mb-2">
                       {entry.employee.photoUrl ? (
                         <img src={entry.employee.photoUrl} alt="" className="w-16 h-16 object-cover rounded-full" />
                       ) : (
@@ -160,7 +160,7 @@ export default function Leaderboard() {
                     <Link to={`/employees/${entry.employee.id}`} className="font-semibold text-white hover:text-primary-400">
                       {entry.employee.firstName} {entry.employee.lastName}
                     </Link>
-                    <p className="text-xs text-gray-500">{entry.employee.jobTitle}</p>
+                    <p className="text-xs text-quantum-zinc">{entry.employee.jobTitle}</p>
                     <div className={`mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r ${GRADE_COLORS[entry.grade]} text-white text-sm font-bold`}>
                       <Award className="w-3.5 h-3.5" /> {entry.grade} ({Math.round(entry.totalScore)})
                     </div>
@@ -179,7 +179,7 @@ export default function Leaderboard() {
           <div className="card overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-800 text-xs text-gray-500">
+                <tr className="border-b text-xs text-quantum-zinc" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
                   <th className="text-left p-3 w-12">#</th>
                   <th className="text-left p-3">Employee</th>
                   <th className="text-left p-3">Department</th>
@@ -192,15 +192,15 @@ export default function Leaderboard() {
               </thead>
               <tbody>
                 {entries.map((entry, idx) => (
-                  <tr key={entry.id} className="border-b border-gray-800/50 hover:bg-gray-800/30">
+                  <tr key={entry.id} className="border-b hover:bg-white/[0.02]" style={{ borderColor: 'rgba(217, 176, 97, 0.05)' }}>
                     <td className="p-3">
-                      <span className={`text-sm font-bold ${idx < 3 ? PODIUM_COLORS[idx] : 'text-gray-500'}`}>
+                      <span className={`text-sm font-bold ${idx < 3 ? PODIUM_COLORS[idx] : 'text-quantum-zinc'}`}>
                         {idx + 1}
                       </span>
                     </td>
                     <td className="p-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-primary-900/40 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-primary-500/10 flex items-center justify-center overflow-hidden flex-shrink-0">
                           {entry.employee.photoUrl ? (
                             <img src={entry.employee.photoUrl} alt="" className="w-8 h-8 object-cover rounded-full" />
                           ) : (
@@ -211,13 +211,13 @@ export default function Leaderboard() {
                           <Link to={`/employees/${entry.employee.id}`} className="text-sm font-medium text-white hover:text-primary-400">
                             {entry.employee.firstName} {entry.employee.lastName}
                           </Link>
-                          <p className="text-xs text-gray-500">{entry.employee.jobTitle}</p>
+                          <p className="text-xs text-quantum-zinc">{entry.employee.jobTitle}</p>
                         </div>
                       </div>
                     </td>
                     <td className="p-3">
                       {entry.employee.department ? (
-                        <span className="text-xs text-gray-400 flex items-center gap-1">
+                        <span className="text-xs text-quantum-zinc flex items-center gap-1">
                           <Building2 className="w-3 h-3" /> {entry.employee.department.name}
                         </span>
                       ) : (
