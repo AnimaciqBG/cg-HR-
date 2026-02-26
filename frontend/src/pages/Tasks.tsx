@@ -210,7 +210,7 @@ export default function Tasks() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Tasks</h1>
+        <h1 className="text-2xl font-bold italic text-gradient-gold">Tasks</h1>
         {isManager && (
           <button onClick={() => setTab('create')} className="btn-primary">
             <Plus className="w-4 h-4 mr-1" /> New Task
@@ -230,17 +230,17 @@ export default function Tasks() {
           ] as [string, number, string][]).map(([label, count, color]) => (
             <div key={label} className="card p-3 text-center">
               <p className={`text-2xl font-bold ${color.split(' ')[1]}`}>{count}</p>
-              <p className="text-xs text-gray-500">{label}</p>
+              <p className="text-xs text-quantum-zinc">{label}</p>
             </div>
           ))}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-gray-800 pb-2">
+      <div className="flex gap-2 border-b pb-2" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
         <button
           onClick={() => setTab('my-tasks')}
-          className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${tab === 'my-tasks' ? 'bg-gray-800 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+          className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${tab === 'my-tasks' ? 'bg-white/[0.03] text-white' : 'text-quantum-zinc hover:text-gray-300'}`}
         >
           <ClipboardList className="w-4 h-4 inline mr-1" /> {isManager ? 'All Tasks' : 'My Tasks'}
         </button>
@@ -248,7 +248,7 @@ export default function Tasks() {
           <>
             <button
               onClick={() => setTab('review')}
-              className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${tab === 'review' ? 'bg-gray-800 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+              className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${tab === 'review' ? 'bg-white/[0.03] text-white' : 'text-quantum-zinc hover:text-gray-300'}`}
             >
               <Eye className="w-4 h-4 inline mr-1" /> Review Queue
               {stats && stats.waitingReview > 0 && (
@@ -257,7 +257,7 @@ export default function Tasks() {
             </button>
             <button
               onClick={() => setTab('create')}
-              className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${tab === 'create' ? 'bg-gray-800 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+              className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${tab === 'create' ? 'bg-white/[0.03] text-white' : 'text-quantum-zinc hover:text-gray-300'}`}
             >
               <Plus className="w-4 h-4 inline mr-1" /> Create Task
             </button>
@@ -286,7 +286,7 @@ export default function Tasks() {
             <div className="card p-12 text-center">
               <ClipboardList className="w-16 h-16 text-gray-600 mx-auto mb-4" />
               <p className="text-lg font-medium text-white">{tab === 'review' ? 'No tasks pending review' : 'No tasks found'}</p>
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="text-sm text-quantum-zinc mt-1">
                 {tab === 'review' ? 'All tasks have been reviewed' : isManager ? 'Create a task to get started' : 'No tasks assigned to you yet'}
               </p>
             </div>
@@ -340,7 +340,7 @@ function TaskCard({ task, isSelected, onClick, isManager }: {
   return (
     <div
       onClick={onClick}
-      className={`card p-4 cursor-pointer transition-all hover:border-primary-800/50 ${isSelected ? 'border-primary-700 bg-gray-800/60' : ''}`}
+      className={`card p-4 cursor-pointer transition-all hover:border-primary-800/50 ${isSelected ? 'border-primary-700 bg-white/[0.03]' : ''}`}
     >
       <div className="flex items-start gap-3">
         <div className={`mt-0.5 px-2 py-1 rounded text-xs font-medium ${statusCfg.color}`}>
@@ -349,7 +349,7 @@ function TaskCard({ task, isSelected, onClick, isManager }: {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-medium text-white truncate">{task.title}</h3>
-          <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+          <div className="flex items-center gap-3 mt-1 text-xs text-quantum-zinc">
             <span className="flex items-center gap-1">
               <User className="w-3 h-3" /> {task.assignee.firstName} {task.assignee.lastName}
             </span>
@@ -451,7 +451,7 @@ function TaskDetail({ task, isManager, onStatusChange, onProofUpload, uploadingP
 
       {/* Review info */}
       {task.reviewRating && (
-        <div className="p-3 rounded-lg bg-gray-800/60 border border-gray-700">
+        <div className="p-3 rounded-2xl bg-white/[0.03] border" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
           <p className="text-xs text-gray-500 mb-1">Review</p>
           <div className="flex items-center gap-1 mb-1">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -558,8 +558,8 @@ function TaskDetail({ task, isManager, onStatusChange, onProofUpload, uploadingP
 
       {/* Review UI (for managers on WAITING_FOR_REVIEW tasks) */}
       {isManager && task.status === 'WAITING_FOR_REVIEW' && (
-        <div className="border-t border-gray-700 pt-4 space-y-3">
-          <h4 className="text-sm font-semibold text-white">Review This Task</h4>
+        <div className="border-t pt-4 space-y-3" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
+          <h4 className="text-sm font-semibold tracking-wide text-white">Review This Task</h4>
 
           {/* Rating */}
           <div>
@@ -624,10 +624,10 @@ function CreateTaskForm({ form, setForm, employees, creating, error, onSubmit }:
 }) {
   return (
     <div className="card p-6">
-      <h3 className="text-lg font-semibold text-white mb-4">Create New Task</h3>
+      <h3 className="text-lg font-semibold tracking-wide text-white mb-4">Create New Task</h3>
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label className="text-xs text-gray-400">Title *</label>
+          <label className="label-luxury">Title *</label>
           <input
             value={form.title}
             onChange={e => setForm({ ...form, title: e.target.value })}
@@ -637,7 +637,7 @@ function CreateTaskForm({ form, setForm, employees, creating, error, onSubmit }:
           />
         </div>
         <div>
-          <label className="text-xs text-gray-400">Description</label>
+          <label className="label-luxury">Description</label>
           <textarea
             value={form.description}
             onChange={e => setForm({ ...form, description: e.target.value })}
@@ -648,7 +648,7 @@ function CreateTaskForm({ form, setForm, employees, creating, error, onSubmit }:
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-gray-400">Priority</label>
+            <label className="label-luxury">Priority</label>
             <select
               value={form.priority}
               onChange={e => setForm({ ...form, priority: e.target.value })}
@@ -661,7 +661,7 @@ function CreateTaskForm({ form, setForm, employees, creating, error, onSubmit }:
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400">Due Date</label>
+            <label className="label-luxury">Due Date</label>
             <input
               type="date"
               value={form.dueDate}
@@ -671,7 +671,7 @@ function CreateTaskForm({ form, setForm, employees, creating, error, onSubmit }:
           </div>
         </div>
         <div>
-          <label className="text-xs text-gray-400">Assign to *</label>
+          <label className="label-luxury">Assign to *</label>
           <select
             value={form.assigneeId}
             onChange={e => setForm({ ...form, assigneeId: e.target.value })}

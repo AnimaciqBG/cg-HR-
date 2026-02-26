@@ -95,7 +95,7 @@ function Avatar({ src, name, size = 'md' }: { src?: string; name: string; size?:
     return <img src={src} alt={name} className={`${sizes[size]} rounded-full object-cover`} />;
   }
   return (
-    <div className={`${sizes[size]} rounded-full bg-primary-900/40 flex items-center justify-center`}>
+    <div className={`${sizes[size]} rounded-full bg-primary-500/10 flex items-center justify-center`}>
       <User className={`${iconSizes[size]} text-primary-400`} />
     </div>
   );
@@ -298,9 +298,9 @@ export default function Messages() {
   return (
     <div className="flex h-[calc(100vh-64px)] -m-6">
       {/* ===== LEFT SIDEBAR: Conversation List ===== */}
-      <div className={`w-80 border-r border-gray-800 flex flex-col bg-black/30 flex-shrink-0 ${activeConvoId ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`w-80 border-r flex flex-col bg-black/30 flex-shrink-0 ${activeConvoId ? 'hidden md:flex' : 'flex'}`}>
         {/* Header */}
-        <div className="p-4 border-b border-gray-800">
+        <div className="p-4 border-b">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-bold text-white">Messages</h2>
             <button
@@ -354,8 +354,8 @@ export default function Messages() {
                 <button
                   key={c.id}
                   onClick={() => selectConvo(c.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-800/60 transition-colors ${
-                    isActive ? 'bg-gray-800/80 border-l-2 border-primary-500' : ''
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/[0.03] transition-colors ${
+                    isActive ? 'bg-white/[0.05] border-l-2 border-primary-500' : ''
                   }`}
                 >
                   <div className="relative flex-shrink-0">
@@ -392,7 +392,7 @@ export default function Messages() {
         {showNewChat ? (
           /* --- New Chat Directory --- */
           <div className="flex flex-col h-full">
-            <div className="p-4 border-b border-gray-800 flex items-center gap-3">
+            <div className="p-4 border-b flex items-center gap-3">
               <button onClick={() => setShowNewChat(false)} className="p-1 rounded hover:bg-gray-800 text-gray-400">
                 <ArrowLeft className="w-5 h-5" />
               </button>
@@ -422,7 +422,7 @@ export default function Messages() {
                   <button
                     key={u.id}
                     onClick={() => startChat(u.id)}
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-gray-800/60 transition-colors"
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/[0.03] transition-colors"
                   >
                     <Avatar src={u.employee.photoUrl} name={`${u.employee.firstName} ${u.employee.lastName}`} />
                     <div className="text-left min-w-0">
@@ -446,7 +446,7 @@ export default function Messages() {
           /* --- Active Chat --- */
           <>
             {/* Chat header */}
-            <div className="px-4 py-3 border-b border-gray-800 flex items-center gap-3">
+            <div className="px-4 py-3 border-b flex items-center gap-3">
               <button
                 onClick={() => { setActiveConvoId(null); setSearchParams({}); }}
                 className="p-1 rounded hover:bg-gray-800 text-gray-400 md:hidden"
@@ -491,7 +491,7 @@ export default function Messages() {
                   if (msg.isSystem) {
                     return (
                       <div key={msg.id} className="text-center py-2">
-                        <span className="text-xs text-gray-600 bg-gray-800/50 px-3 py-1 rounded-full">{msg.content}</span>
+                        <span className="text-xs text-gray-600 bg-white/[0.03] px-3 py-1 rounded-full">{msg.content}</span>
                       </div>
                     );
                   }
@@ -516,7 +516,7 @@ export default function Messages() {
                           <div className={`rounded-2xl px-3.5 py-2 ${
                             isMe
                               ? 'bg-primary-600 text-black rounded-br-md'
-                              : 'bg-gray-800 text-gray-200 rounded-bl-md'
+                              : 'bg-white/[0.03] text-gray-200 rounded-bl-md'
                           }`}>
                             {msg.content && <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>}
 
@@ -566,9 +566,9 @@ export default function Messages() {
 
             {/* Attachment preview */}
             {attachments.length > 0 && (
-              <div className="px-4 py-2 border-t border-gray-800 flex gap-2 flex-wrap">
+              <div className="px-4 py-2 border-t flex gap-2 flex-wrap">
                 {attachments.map((f, i) => (
-                  <div key={i} className="flex items-center gap-1.5 bg-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-gray-300">
+                  <div key={i} className="flex items-center gap-1.5 bg-white/[0.03] rounded-2xl px-2.5 py-1.5 text-xs text-gray-300">
                     {f.type.startsWith('image/') ? <Image className="w-3 h-3" /> : <FileText className="w-3 h-3" />}
                     <span className="truncate max-w-[120px]">{f.name}</span>
                     <button onClick={() => setAttachments((a) => a.filter((_, j) => j !== i))} className="text-gray-500 hover:text-red-400">
@@ -589,7 +589,7 @@ export default function Messages() {
             )}
 
             {/* Input bar */}
-            <form onSubmit={handleSend} className="px-4 py-3 border-t border-gray-800 flex items-end gap-2">
+            <form onSubmit={handleSend} className="px-4 py-3 border-t flex items-end gap-2">
               <input
                 type="file"
                 ref={fileInputRef}
@@ -642,7 +642,7 @@ export default function Messages() {
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <MessageSquare className="w-16 h-16 text-gray-800 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-400">Your Messages</h3>
+              <h3 className="text-lg font-semibold text-quantum-zinc">Your Messages</h3>
               <p className="text-sm text-gray-600 mt-1 mb-4">Select a conversation or start a new one</p>
               <button
                 onClick={() => { setShowNewChat(true); setDirSearch(''); }}

@@ -96,17 +96,17 @@ export default function Training() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Training & Development</h1>
+        <h1 className="text-2xl font-bold italic text-gradient-gold">Training & Development</h1>
         {hasMinRole('TEAM_LEAD') && tab === 'catalog' && (
           <button onClick={() => setShowCreate(true)} className="btn-primary"><Plus className="w-4 h-4 mr-1" /> New Training</button>
         )}
       </div>
 
-      <div className="flex gap-1 border-b border-gray-800">
-        <button onClick={() => setTab('my')} className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === 'my' ? 'border-primary-500 text-primary-400' : 'border-transparent text-gray-500'}`}>
+      <div className="flex gap-1 border-b" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
+        <button onClick={() => setTab('my')} className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === 'my' ? 'border-primary-500 text-primary-400' : 'border-transparent text-quantum-zinc'}`}>
           My Training
         </button>
-        <button onClick={() => setTab('catalog')} className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === 'catalog' ? 'border-primary-500 text-primary-400' : 'border-transparent text-gray-500'}`}>
+        <button onClick={() => setTab('catalog')} className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === 'catalog' ? 'border-primary-500 text-primary-400' : 'border-transparent text-quantum-zinc'}`}>
           Course Catalog
         </button>
       </div>
@@ -115,21 +115,21 @@ export default function Training() {
       {showCreate && (
         <div className="card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white">New Training Course</h3>
+            <h3 className="text-lg font-semibold tracking-wide text-white">New Training Course</h3>
             <button onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
           </div>
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-300">Title</label>
+              <label className="label-luxury">Title</label>
               <input value={createForm.title} onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })} className="input-field mt-1" required />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-300">Description</label>
+              <label className="label-luxury">Description</label>
               <textarea value={createForm.description} onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })} className="input-field mt-1" rows={3} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-300">Duration (minutes)</label>
+                <label className="label-luxury">Duration (minutes)</label>
                 <input type="number" value={createForm.durationMinutes} onChange={(e) => setCreateForm({ ...createForm, durationMinutes: parseInt(e.target.value) })} className="input-field mt-1" />
               </div>
               <div className="flex items-end pb-2">
@@ -151,7 +151,7 @@ export default function Training() {
         <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div></div>
       ) : tab === 'my' ? (
         enrollments.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-12 text-quantum-zinc">
             <GraduationCap className="w-12 h-12 mx-auto mb-3 text-gray-600" />
             <p>No training enrollments yet</p>
           </div>
@@ -164,8 +164,8 @@ export default function Training() {
                     <BookOpen className="w-5 h-5 text-primary-400 mt-0.5" />
                     <div>
                       <p className="font-semibold text-white">{e.training.title}</p>
-                      {e.training.description && <p className="text-sm text-gray-400 mt-1">{e.training.description}</p>}
-                      <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                      {e.training.description && <p className="text-sm text-quantum-zinc mt-1">{e.training.description}</p>}
+                      <div className="flex items-center gap-3 mt-2 text-xs text-quantum-zinc">
                         {e.training.durationMinutes && <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {e.training.durationMinutes} min</span>}
                         {e.training.isMandatory && <span className="badge badge-red">Mandatory</span>}
                         {e.dueDate && <span>Due: {new Date(e.dueDate).toLocaleDateString('bg-BG')}</span>}
@@ -189,15 +189,15 @@ export default function Training() {
                 <GraduationCap className="w-6 h-6 text-primary-400" />
                 <div className="flex-1">
                   <p className="font-semibold text-white">{t.title}</p>
-                  {t.description && <p className="text-sm text-gray-400 mt-1 line-clamp-2">{t.description}</p>}
+                  {t.description && <p className="text-sm text-quantum-zinc mt-1 line-clamp-2">{t.description}</p>}
                   <div className="flex items-center gap-2 mt-2">
                     {t.isMandatory && <span className="badge badge-red">Mandatory</span>}
-                    {t.durationMinutes && <span className="text-xs text-gray-500">{t.durationMinutes} min</span>}
+                    {t.durationMinutes && <span className="text-xs text-quantum-zinc">{t.durationMinutes} min</span>}
                   </div>
                 </div>
               </div>
               {hasMinRole('TEAM_LEAD') && (
-                <div className="mt-3 pt-3 border-t border-gray-800">
+                <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(217, 176, 97, 0.08)' }}>
                   {showAssign === t.id ? (
                     <div className="space-y-2">
                       <select value={assignEmployeeId} onChange={(e) => setAssignEmployeeId(e.target.value)} className="input-field text-sm">

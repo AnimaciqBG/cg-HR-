@@ -100,7 +100,7 @@ export default function Schedule() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Schedule</h1>
+        <h1 className="text-2xl font-bold italic text-gradient-gold">Schedule</h1>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <button onClick={prevMonth} className="btn-secondary p-2"><ChevronLeft className="w-4 h-4" /></button>
@@ -115,26 +115,26 @@ export default function Schedule() {
         </div>
       </div>
 
-      <p className="text-sm text-gray-400 capitalize">{monthName}</p>
+      <p className="text-sm text-quantum-zinc tracking-wide capitalize">{monthName}</p>
 
       {/* Create Shift Form */}
       {showCreate && (
         <div className="card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white">Create Shift</h3>
+            <h3 className="text-lg font-semibold tracking-wide text-white">Create Shift</h3>
             <button onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
           </div>
           <form onSubmit={handleCreateShift} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-300">Employee</label>
+                <label className="label-luxury">Employee</label>
                 <select value={shiftForm.employeeId} onChange={(e) => setShiftForm({ ...shiftForm, employeeId: e.target.value })} className="input-field mt-1">
                   <option value="">Open Shift</option>
                   {employees.map(emp => <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">Template</label>
+                <label className="label-luxury">Template</label>
                 <select value={shiftForm.templateId} onChange={(e) => onTemplateSelect(e.target.value)} className="input-field mt-1">
                   <option value="">Custom</option>
                   {templates.map(t => <option key={t.id} value={t.id}>{t.name} ({t.startTime}-{t.endTime})</option>)}
@@ -143,20 +143,20 @@ export default function Schedule() {
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-300">Date</label>
+                <label className="label-luxury">Date</label>
                 <input type="date" value={shiftForm.date} onChange={(e) => setShiftForm({ ...shiftForm, date: e.target.value })} className="input-field mt-1" required />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">Start Time</label>
+                <label className="label-luxury">Start Time</label>
                 <input type="time" value={shiftForm.startTime} onChange={(e) => setShiftForm({ ...shiftForm, startTime: e.target.value })} className="input-field mt-1" required />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">End Time</label>
+                <label className="label-luxury">End Time</label>
                 <input type="time" value={shiftForm.endTime} onChange={(e) => setShiftForm({ ...shiftForm, endTime: e.target.value })} className="input-field mt-1" required />
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-300">Notes</label>
+              <label className="label-luxury">Notes</label>
               <input value={shiftForm.notes} onChange={(e) => setShiftForm({ ...shiftForm, notes: e.target.value })} className="input-field mt-1" placeholder="Optional notes" />
             </div>
             <div className="flex gap-2">
@@ -174,13 +174,13 @@ export default function Schedule() {
         <div>
           <div className="grid grid-cols-7 gap-1 mb-1">
             {dayNames.map(d => (
-              <div key={d} className="text-center text-xs font-medium text-gray-500 py-2">{d}</div>
+              <div key={d} className="text-center text-xs font-medium text-quantum-zinc py-2">{d}</div>
             ))}
           </div>
           <div className="grid grid-cols-7 gap-1">
             {/* Empty cells for days before month starts */}
             {Array.from({ length: firstDayOfWeek }, (_, i) => (
-              <div key={`empty-${i}`} className="min-h-[100px] bg-gray-900/30 rounded-lg" />
+              <div key={`empty-${i}`} className="min-h-[100px] bg-white/[0.02] rounded-2xl" />
             ))}
             {/* Days of the month */}
             {Array.from({ length: daysInMonth }, (_, i) => {
@@ -203,7 +203,7 @@ export default function Schedule() {
                         </span>
                       </div>
                     ))}
-                    {dayShifts.length > 3 && <p className="text-[10px] text-gray-500">+{dayShifts.length - 3} more</p>}
+                    {dayShifts.length > 3 && <p className="text-[10px] text-quantum-zinc">+{dayShifts.length - 3} more</p>}
                   </div>
                 </div>
               );

@@ -107,55 +107,56 @@ export default function Header() {
   }
 
   return (
-    <header className="h-16 bg-gray-950 border-b border-gray-800 flex items-center justify-between px-6 sticky top-0 z-10">
+    <header className="h-20 glass flex items-center justify-between px-8 sticky top-0 z-10">
       {/* Search */}
       <form onSubmit={handleSearch} className="flex items-center w-96 max-w-md">
         <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-quantum-zinc" />
           <input
             type="text"
             placeholder="Search employees, documents..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input-field pl-10 py-2"
+            className="input-field pl-11 py-2.5"
           />
         </div>
       </form>
 
       {/* Right side */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 rounded-lg hover:bg-gray-800 relative text-gray-400"
+            className="p-2.5 rounded-2xl hover:bg-white/[0.03] relative text-quantum-zinc transition-all duration-300"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 text-black text-xs rounded-full flex items-center justify-center font-bold">
+              <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-[#020202]" style={{ background: 'linear-gradient(135deg, #D9B061, #8A6D3B)' }}>
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 top-12 w-80 card shadow-lg max-h-96 overflow-hidden z-50">
-              <div className="flex items-center justify-between p-3 border-b border-gray-800">
-                <h3 className="font-semibold text-sm text-white">Notifications</h3>
+            <div className="absolute right-0 top-14 w-80 card shadow-gold-lg max-h-96 overflow-hidden z-50">
+              <div className="flex items-center justify-between p-4">
+                <h3 className="font-semibold text-sm text-white tracking-wide">Notifications</h3>
                 {unreadCount > 0 && (
-                  <button onClick={markAllRead} className="text-xs text-primary-400 hover:underline">
+                  <button onClick={markAllRead} className="text-xs text-primary-400 hover:text-primary-300 transition-colors">
                     Mark all read
                   </button>
                 )}
               </div>
+              <div className="gold-line" />
               <div className="overflow-y-auto max-h-72">
                 {notifications.length === 0 ? (
-                  <p className="p-4 text-sm text-gray-500 text-center">No notifications</p>
+                  <p className="p-6 text-sm text-quantum-zinc text-center">No notifications</p>
                 ) : (
                   notifications.slice(0, 10).map((n) => (
-                    <div key={n.id} className={`p-3 border-b border-gray-800 text-sm ${!n.isRead ? 'bg-primary-900/20' : ''}`}>
+                    <div key={n.id} className={`p-4 text-sm transition-colors ${!n.isRead ? 'bg-primary-500/[0.04]' : ''}`} style={{ borderBottom: '1px solid rgba(217, 176, 97, 0.04)' }}>
                       <p className="font-medium text-white">{n.title}</p>
-                      <p className="text-gray-500 text-xs mt-0.5">{n.message}</p>
+                      <p className="text-quantum-zinc text-xs mt-1">{n.message}</p>
                     </div>
                   ))
                 )}
@@ -164,76 +165,81 @@ export default function Header() {
           )}
         </div>
 
+        {/* Separator */}
+        <div className="w-px h-8" style={{ background: 'linear-gradient(to bottom, transparent, rgba(217, 176, 97, 0.15), transparent)' }} />
+
         {/* User avatar with photo upload */}
-        <div className="relative flex items-center gap-2 pl-2 border-l border-gray-800" ref={avatarRef}>
+        <div className="relative flex items-center gap-3" ref={avatarRef}>
           <button
             onClick={() => setShowAvatarMenu(!showAvatarMenu)}
             className="relative group"
           >
-            <div className="w-9 h-9 rounded-full bg-primary-900/50 border-2 border-primary-700/50 flex items-center justify-center overflow-hidden hover:border-primary-500 transition-colors">
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:shadow-gold" style={{ background: 'rgba(217, 176, 97, 0.08)', border: '1px solid rgba(217, 176, 97, 0.12)' }}>
               {photoUrl ? (
-                <img src={photoUrl} alt="" className="w-9 h-9 rounded-full object-cover" />
+                <img src={photoUrl} alt="" className="w-10 h-10 rounded-2xl object-cover" />
               ) : (
-                <User className="w-4 h-4 text-primary-400" />
+                <User className="w-4 h-4 text-primary-500" />
               )}
             </div>
             {hasPending && (
-              <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-yellow-500 rounded-full flex items-center justify-center">
-                <Clock className="w-2 h-2 text-black" />
+              <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #D9B061, #8A6D3B)' }}>
+                <Clock className="w-2 h-2 text-[#020202]" />
               </div>
             )}
             {uploading && (
-              <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <div className="absolute inset-0 rounded-2xl bg-[#020202]/60 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>
               </div>
             )}
           </button>
           {user?.employee && (
-            <span className="text-sm font-medium text-gray-300 hidden md:block">
+            <span className="text-sm font-medium text-gray-300 hidden md:block tracking-wide">
               {user.employee.firstName}
             </span>
           )}
 
           {/* Avatar dropdown menu */}
           {showAvatarMenu && (
-            <div className="absolute right-0 top-12 w-56 card shadow-lg z-50 overflow-hidden">
+            <div className="absolute right-0 top-14 w-60 card shadow-gold-lg z-50 overflow-hidden">
               {/* User info */}
-              <div className="p-3 border-b border-gray-800">
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-full bg-primary-900/50 flex items-center justify-center overflow-hidden">
+              <div className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl flex items-center justify-center overflow-hidden" style={{ background: 'rgba(217, 176, 97, 0.08)', border: '1px solid rgba(217, 176, 97, 0.12)' }}>
                     {photoUrl ? (
-                      <img src={photoUrl} alt="" className="w-10 h-10 rounded-full object-cover" />
+                      <img src={photoUrl} alt="" className="w-11 h-11 rounded-2xl object-cover" />
                     ) : (
-                      <User className="w-5 h-5 text-primary-400" />
+                      <User className="w-5 h-5 text-primary-500" />
                     )}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-white">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-white truncate">
                       {user?.employee ? `${user.employee.firstName} ${user.employee.lastName}` : user?.email}
                     </p>
-                    <p className="text-xs text-gray-500">{user?.email}</p>
+                    <p className="text-xs text-quantum-zinc truncate">{user?.email}</p>
                   </div>
                 </div>
               </div>
 
+              <div className="gold-line" />
+
               {/* Actions */}
-              <div className="p-1">
+              <div className="p-2">
                 {employeeId && (
                   <Link
                     to={`/employees/${employeeId}`}
                     onClick={() => setShowAvatarMenu(false)}
-                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-lg"
+                    className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-gray-300 hover:bg-white/[0.03] rounded-xl transition-all duration-300"
                   >
-                    <User className="w-4 h-4" /> View Profile
+                    <User className="w-4 h-4" /> <span className="tracking-wide">View Profile</span>
                   </Link>
                 )}
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-lg disabled:opacity-50"
+                  className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-gray-300 hover:bg-white/[0.03] rounded-xl disabled:opacity-50 transition-all duration-300"
                 >
-                  <Camera className="w-4 h-4" /> Change Photo
-                  {hasPending && <span className="ml-auto text-xs text-yellow-400">pending</span>}
+                  <Camera className="w-4 h-4" /> <span className="tracking-wide">Change Photo</span>
+                  {hasPending && <span className="ml-auto text-xs text-primary-500 tracking-wider uppercase">pending</span>}
                 </button>
               </div>
 

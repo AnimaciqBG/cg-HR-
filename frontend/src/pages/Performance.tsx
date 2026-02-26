@@ -81,7 +81,7 @@ export default function Performance() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Performance Reviews</h1>
+        <h1 className="text-2xl font-bold italic text-gradient-gold">Performance Reviews</h1>
         {hasMinRole('TEAM_LEAD') && (
           <button onClick={() => setShowCreate(!showCreate)} className="btn-primary"><Plus className="w-4 h-4 mr-1" /> New Review</button>
         )}
@@ -90,20 +90,20 @@ export default function Performance() {
       {showCreate && (
         <div className="card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white">New Performance Review</h3>
+            <h3 className="text-lg font-semibold tracking-wide text-white">New Performance Review</h3>
             <button onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
           </div>
           <form onSubmit={handleCreate} className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-300">Employee</label>
+                <label className="label-luxury">Employee</label>
                 <select value={form.employeeId} onChange={(e) => setForm({ ...form, employeeId: e.target.value })} className="input-field mt-1" required>
                   <option value="">Select...</option>
                   {employees.map(emp => <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">Period</label>
+                <label className="label-luxury">Period</label>
                 <select value={form.period} onChange={(e) => setForm({ ...form, period: e.target.value })} className="input-field mt-1">
                   <option value="QUARTERLY">Quarterly</option>
                   <option value="SEMI_ANNUAL">Semi-Annual</option>
@@ -111,12 +111,12 @@ export default function Performance() {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">Year</label>
+                <label className="label-luxury">Year</label>
                 <input type="number" value={form.year} onChange={(e) => setForm({ ...form, year: parseInt(e.target.value) })} className="input-field mt-1" />
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-300">Overall Score (1-5)</label>
+              <label className="label-luxury">Overall Score (1-5)</label>
               <div className="flex items-center gap-2 mt-1">
                 {[1, 2, 3, 4, 5].map(i => (
                   <button key={i} type="button" onClick={() => setForm({ ...form, overallScore: i })} className="focus:outline-none">
@@ -126,11 +126,11 @@ export default function Performance() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-300">Strengths</label>
+              <label className="label-luxury">Strengths</label>
               <textarea value={form.strengths} onChange={(e) => setForm({ ...form, strengths: e.target.value })} className="input-field mt-1" rows={2} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-300">Areas for Improvement</label>
+              <label className="label-luxury">Areas for Improvement</label>
               <textarea value={form.improvements} onChange={(e) => setForm({ ...form, improvements: e.target.value })} className="input-field mt-1" rows={2} />
             </div>
             <div className="flex gap-2">
@@ -144,7 +144,7 @@ export default function Performance() {
       {loading ? (
         <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div></div>
       ) : reviews.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-quantum-zinc">
           <Award className="w-12 h-12 mx-auto mb-3 text-gray-600" />
           <p>No performance reviews yet</p>
         </div>
@@ -158,8 +158,8 @@ export default function Performance() {
                     <p className="font-semibold text-white">{review.employee.firstName} {review.employee.lastName}</p>
                     <span className={`badge ${statusColors[review.status] || 'badge-gray'}`}>{review.status}</span>
                   </div>
-                  <p className="text-sm text-gray-400">{review.employee.jobTitle}</p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-sm text-quantum-zinc">{review.employee.jobTitle}</p>
+                  <p className="text-xs text-quantum-zinc mt-1">
                     {review.period} {review.year}{review.quarter ? ` Q${review.quarter}` : ''} | Reviewer: {review.reviewer.firstName} {review.reviewer.lastName}
                   </p>
                 </div>
@@ -170,13 +170,13 @@ export default function Performance() {
                   {review.strengths && (
                     <div>
                       <p className="text-xs font-medium text-green-400 mb-1">Strengths</p>
-                      <p className="text-gray-400">{review.strengths}</p>
+                      <p className="text-quantum-zinc">{review.strengths}</p>
                     </div>
                   )}
                   {review.improvements && (
                     <div>
                       <p className="text-xs font-medium text-orange-400 mb-1">Areas for Improvement</p>
-                      <p className="text-gray-400">{review.improvements}</p>
+                      <p className="text-quantum-zinc">{review.improvements}</p>
                     </div>
                   )}
                 </div>
